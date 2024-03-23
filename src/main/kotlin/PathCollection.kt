@@ -1,5 +1,6 @@
 import soot.*
 import soot.jimple.*
+import soot.jimple.internal.JEqExpr
 import soot.options.Options
 import soot.toolkits.graph.Block
 import soot.toolkits.graph.BlockGraph
@@ -65,6 +66,34 @@ class Slicer(val programPath: List<Block>) {
                         else Negate(Single(jumpStatement.condition))
                     else if (jumpStatement is GotoStmt)
                         Nop()
+                    else if (jumpStatement is SwitchStmt) {
+                        val res = mutableListOf<Condition>()
+                        val table = if (jumpStatement is TableSwitchStmt) {
+                            ((jumpStatement.lowIndex..jumpStatement.highIndex)
+                                .map { Single(JEqExpr(jumpStatement.key, IntConstant.v(it))) }
+                                .toList() + Nop()
+                            ).zip(jumpStatement.targets)
+                        } else if (jumpStatement is LookupSwitchStmt) {
+                            ((jumpStatement.lookupValues)
+                                .map { Single(JEqExpr(jumpStatement.key, it)) }
+                                .toList() + Nop()
+                            ).zip(jumpStatement.targets)
+                        } else {
+                            println("not support type")
+                            throw RuntimeException("switch condition check fail")
+                        }
+                        for ((cond, target) in table) {
+                            if (target != next.head) {
+                                res.add(Negate(cond))
+                            } else {
+                                if (target != jumpStatement.defaultTarget)
+                                    res.add(cond)
+                                break
+                            }
+                        }
+                        if (res.isEmpty()) Nop()
+                        else res.fold(Nop()) { acc: Condition, condition -> Intersect(condition, acc) }
+                    }
                     else Nop("DEBUG: $jumpStatement")
                 }
             }
