@@ -303,9 +303,9 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 is Local -> transformName(value)
                 is CastExpr -> {
                     val castFuncName = "cast-from-${
-                        transformName(value.op.type).replace("[( ]".toRegex(), "__")
+                        transformName(value.op.type).replace("[( )]".toRegex(), "__")
                     }-to-${
-                        transformName(value.castType).replace("[( ]".toRegex(), "__")
+                        transformName(value.castType).replace("[( )]".toRegex(), "__")
                     }"
                     functions.putIfAbsent(
                         castFuncName,
