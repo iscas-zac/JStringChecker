@@ -175,7 +175,7 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
             SList(
                 "=",
                 SList("str.len", "s"),
-                0
+                "0"
             )
         )
 
