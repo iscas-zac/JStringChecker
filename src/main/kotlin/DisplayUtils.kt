@@ -406,7 +406,6 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             is ThrowStmt -> ""
             is ReturnStmt -> ""
             is ReturnVoidStmt -> ""
-            is LookupSwitchStmt -> ""
             is InvokeStmt -> {
                 val ie = stmt.invokeExpr
                 val objectsToReassign = (if (ie is InstanceInvokeExpr)
@@ -421,6 +420,9 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     }
                 ";(assert $prog)"
             } // TODO: more about the side effect
+            is SwitchStmt -> {
+                ""
+            }
             else -> "!!!!!!${stmt.javaClass} "
         }
     }
@@ -432,7 +434,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         is Negate -> "(not ${conditionExpander(condition.cond)})"
         is Nop -> "true"
         is Single -> bundle.transformValue(condition.value)
-        is Union -> "(or ${conditionExpander(condition.leftCond)} ${conditionExpander(condition.rightCond)}"
+        is Union -> "(or ${conditionExpander(condition.leftCond)} ${conditionExpander(condition.rightCond)})"
     }
 
     // entry point
