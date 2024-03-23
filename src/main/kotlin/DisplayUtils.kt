@@ -152,7 +152,6 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 }
 
                 is InstanceFieldRef -> {
-//            val className = transformTypeToCppCompatWithStructPrefix(value.type)
                     val className = value.field.declaringClass
                     val fieldName =
                         value.field.name + "/${className.hashCode()}" // TODO: check if inherited field works
@@ -382,11 +381,16 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         // second method after entry
         fun transformStmt(stmt: Stmt) = when (stmt) {
             is IdentityStmt -> {
-                val res = transformDefine(stmt.rightOp.type, stmt.leftOp)
-                if (stmt.rightOp is ThisRef) // this object should not be null by definition
-                    post = "(assert (not (= ${transformName(stmt.leftOp)} ${coerce(NullConstant.v(), listOf(stmt.leftOp.type))})))"
-                if (stmt.rightOp is ParameterRef) // TODO: assume params are not null, but only as an option
-                    post += "\n(assert (not (= ${transformName(stmt.leftOp)} ${coerce(NullConstant.v(), listOf(stmt.leftOp.type))})))"
+                val res = transformDefine(stmt.leftOp.type, stmt.leftOp)
+                val separator = if (post.isEmpty()) "" else "\n"
+                post += when (stmt.rightOp) { // this object should not be null by definition
+                    is ThisRef -> "$separator(assert (not (= ${transformName(stmt.leftOp)} ${coerce(NullConstant.v(), listOf(stmt.leftOp.type))})))"
+                    is ParameterRef -> // TODO: assume params are not null, but only as an option
+                        "$separator(assert (not (= ${transformName(stmt.leftOp)} ${coerce(NullConstant.v(), listOf(stmt.leftOp.type))})))"
+                    else -> {
+                        "$separator(assert (not (= ${transformName(stmt.leftOp)} ${coerce(NullConstant.v(), listOf(stmt.leftOp.type))})))"
+                    }
+                }
                 res
             }
             is AssignStmt -> transformDefine(stmt.leftOp.type, stmt.leftOp, stmt.rightOp)
