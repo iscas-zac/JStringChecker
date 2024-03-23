@@ -162,7 +162,14 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
                 SList("index", "Int")
             ),
             "Int",
-            SList("str.at", "s", "index")
+            SList(
+                "str.to_code",
+                SList(
+                    "str.at",
+                    "s",
+                    "index"
+                )
+            )
         )
 
         funcs["isEmpty/${isEmpty_sig.hashCode()}"] = SList(
@@ -724,7 +731,7 @@ fun preconditionOfFunctions(name: String, args: List<String>): SExpression? {
                 SList(
                     "<=",
                     "0",
-                    s
+                    index
                 )
             )
         }
