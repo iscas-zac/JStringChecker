@@ -133,7 +133,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
 
                 val argsString = args.zip(functions[funcName]!!.first)
                     .joinToString(" ") { (arg, type) -> coerce(arg, listOf(type as Numberable)) }
-                return "($funcName $argsString)"
+                return if (argsString.isEmpty()) funcName else "($funcName $argsString)"
             }
 
             return when (value) {
