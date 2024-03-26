@@ -48,6 +48,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 ByteType.v() -> return "Int" // TODO: temporarily use int for program int and byte type
                 VoidType.v() -> return "void"
                 CharType.v() -> return "Int"
+                FloatType.v() -> return "FloatingPoint" // TODO: fine-grained float type
+                DoubleType.v() -> return "FloatingPoint"
                 Scene.v().getSootClass("java.lang.String") -> return "String"
                 Scene.v().getSootClass("java.lang.StringBuilder") -> return "String"
                 Scene.v().getSootClass("java.lang.StringBuffer") -> return "String"
@@ -88,6 +90,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
 
             if (typeClasses.contains(BooleanType.v()) && valueToBeCoerced.type is IntType)
                 return "(ite (= 1 ${transformValue(valueToBeCoerced)}) true false)" // special downcast
+            if (typeClasses.all { it in listOf(IntType.v(), FloatType.v(), DoubleType.v()) } && valueToBeCoerced.type is IntType)
+                return "(to_fp roundNearestTiesToEven (to_real ${transformValue(valueToBeCoerced)}))" // TODO: support comprehensive floating point representation
             if (typeClasses.size == 1 && isNotSameTypeButCastable(valueToBeCoerced.type, typeClasses[0] as Type)
             ) { // only upcast for now
                 val typeToCoerce = typeClasses[0]
@@ -299,8 +303,22 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
 
                     " == " -> {
                         val types = listOf(value.op1.type, value.op2.type)
-                        // compromise to bytecode's comparison of integers to booleans
                         "(= ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " + ", " - ", " * ", " / " -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(${value.symbol.trim()} ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " && " -> {
+                        val types = listOf(value.op1.type, value.op2.type, BooleanType.v())
+                        "(and ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " || " -> {
+                        val types = listOf(value.op1.type, value.op2.type, BooleanType.v())
+                        "(or ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
                     }
 
                     else -> "(${value.symbol} ${transformValue(value.op1)} ${transformValue(value.op2)})"
@@ -420,9 +438,9 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     }
                 ";(assert $prog)"
             } // TODO: more about the side effect
-            is SwitchStmt -> {
-                ""
-            }
+            is SwitchStmt -> ""
+            is EnterMonitorStmt -> "" // TODO: concurrency validation
+            is ExitMonitorStmt -> ""
             else -> "!!!!!!${stmt.javaClass} "
         }
     }
