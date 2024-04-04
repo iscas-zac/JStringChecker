@@ -10,13 +10,15 @@ fun main(args: Array<String>) {
     for (pathsOfFunc in slice(args[0])) { // write to .path files
         val dir = File("paths", "method-" + pathsOfFunc.key.replace("<", "《").replace(">", "》"))
         if (dir.isDirectory() || dir.mkdir()) {
-            pathsOfFunc.value.forEachIndexed { index, slicer ->
+            pathsOfFunc.value.filter { it.isStringRelated() }.take(10000).forEachIndexed { index, slicer ->
                 val (normal, deviants) = compatibleSmtlibTransformer(slicer)
                 File(dir, "$index.path").writeText(normal)
                 deviants.forEachIndexed { num, text ->
                     File(dir, "$index-deviant-$num.path").writeText(text)
                 }
             }
+            println(pathsOfFunc.key + "     "+ pathsOfFunc.value.size)
+            println(pathsOfFunc.value.any { it.isStringRelated() })
         }
     }
 }

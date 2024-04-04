@@ -1,3 +1,4 @@
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringType
 import soot.*
 import soot.jimple.*
 import soot.jimple.internal.JEqExpr
@@ -55,6 +56,9 @@ class Slicer(val programPath: List<Block>) {
         }.flatMap { it.defBoxes }
             .map { it.value }
     }
+
+    public fun isStringRelated() = stmts.filterIsInstance<DefinitionStmt>()
+        .any { it.leftOp.type == RefType.v("java.lang.String") }
 
     fun getPathConstraints(): List<Condition> {
         if (constraintChain == null)
