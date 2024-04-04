@@ -287,12 +287,12 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 }
 
                 is ClassConstant -> "${transformName(value.toSootType())}!class"
-                is StringConstant -> value.toString()
+                is StringConstant -> value.toString() // escape string
+                    .replace("\\\\", "\\u005c")
                     .replace("\\\"", "\\u0022")
                     .replace("\\\b", "\\u0008")
                     .replace("\\\t", "\\u0009")
                     .replace("\\\n", "\\u000a")
-                    .replace("\\\\", "\\u005c")
                     .replace("\\\r", "\\u000d")
                     .replace("\\\'", "\\u0027")
                 is NegExpr -> "(- ${transformValue(value.op)})"
