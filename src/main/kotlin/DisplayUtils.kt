@@ -315,12 +315,12 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
 
                     " && " -> {
                         val types = listOf(value.op1.type, value.op2.type, BooleanType.v())
-                        "(and ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
-                    }
+                        "(ite (and ${coerce(value.op1, types)} ${coerce(value.op2, types)}) 1 0)"
+                    } // add ite to cast to int, be compatible with the bytecode behavior
 
                     " || " -> {
                         val types = listOf(value.op1.type, value.op2.type, BooleanType.v())
-                        "(or ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                        "(ite (or ${coerce(value.op1, types)} ${coerce(value.op2, types)}) 1 0)"
                     }
 
                     else -> "(${value.symbol} ${transformValue(value.op1)} ${transformValue(value.op2)})"
