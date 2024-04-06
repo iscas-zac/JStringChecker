@@ -296,34 +296,119 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     .replace("\\\r", "\\u000d")
                     .replace("\\\'", "\\u0027")
                 is NegExpr -> "(- ${transformValue(value.op)})"
-                is BinopExpr -> when (value.symbol) {
-                    " != " -> {
+                is BinopExpr -> when (value.symbol to listOf(value.op1.type, value.op2.type).any { it is FloatType || it is DoubleType }) {
+                    " != " to false -> { // false means that it is not a float operator
                         val types = listOf(value.op1.type, value.op2.type)
                         // compromise to bytecode's comparison of integers to booleans
                         "(not (= ${coerce(value.op1, types)} ${coerce(value.op2, types)}))"
                     }
 
-                    " == " -> {
+                    " == " to false -> {
                         val types = listOf(value.op1.type, value.op2.type)
                         "(= ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
                     }
 
-                    " + ", " - ", " * ", " / " -> {
+                    " != " to true -> {
                         val types = listOf(value.op1.type, value.op2.type)
-                        "(${value.symbol.trim()} ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                        // compromise to bytecode's comparison of integers to booleans
+                        "(not (fp.eq ${coerce(value.op1, types)} ${coerce(value.op2, types)}))"
                     }
 
-                    " && " -> {
+                    " == " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.eq ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " + " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.add roundNearestTiesToEven ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " - " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.sub roundNearestTiesToEven ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " * " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.mul roundNearestTiesToEven ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " / " to false -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(div ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " / " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.div roundNearestTiesToEven ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " % " to false -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(mod ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " && " to false, " & " to false -> {
                         val types = listOf(value.op1.type, value.op2.type, BooleanType.v())
                         "(ite (and ${coerce(value.op1, types)} ${coerce(value.op2, types)}) 1 0)"
                     } // add ite to cast to int, be compatible with the bytecode behavior
 
-                    " || " -> {
+                    " || " to false, " | " to false -> {
                         val types = listOf(value.op1.type, value.op2.type, BooleanType.v())
                         "(ite (or ${coerce(value.op1, types)} ${coerce(value.op2, types)}) 1 0)"
                     }
 
-                    else -> "(${value.symbol} ${transformValue(value.op1)} ${transformValue(value.op2)})"
+                    " ^ " to false -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(ite (xor ${coerce(value.op1, types)} ${coerce(value.op2, types)}) 1 0)"
+                    }
+
+                    " >> " to false, " >>> " to false -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(div ${coerce(value.op1, types)} (^ 2 ${coerce(value.op2, types)}))"
+                    } // TODO: make out the difference between signed and unsigned
+
+                    " << " to false -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(* ${coerce(value.op1, types)} (^ 2 ${coerce(value.op2, types)}))"
+                    } // TODO: use with bv model of int
+
+                    " cmpg " to false, " cmpl " to false, " cmp " to false -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        val v1 = coerce(value.op1, types)
+                        val v2 = coerce(value.op2, types)
+                        "(ite (> $v1 $v2) 1 (ite (< $v1 $v2) -1 0))"
+                    }
+
+                    " cmpg " to true, " cmpl " to true, " cmp " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        val v1 = coerce(value.op1, types)
+                        val v2 = coerce(value.op2, types)
+                        "(ite (fp.gt $v1 $v2) 1 (ite (fp.lt $v1 $v2) -1 0))"
+                    }
+
+                    " > " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.gt ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " >= " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.geq ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " < " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.lt ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " <= " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.leq ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    else -> "(${value.symbol.trim()} ${transformValue(value.op1)} ${transformValue(value.op2)})"
                 }
 
                 is Local -> transformName(value)
