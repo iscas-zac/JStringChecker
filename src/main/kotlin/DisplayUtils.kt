@@ -367,12 +367,12 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
 
                     " >> " to false, " >>> " to false -> {
                         val types = listOf(value.op1.type, value.op2.type)
-                        "(div ${coerce(value.op1, types)} (^ 2 ${coerce(value.op2, types)}))"
+                        "(div ${coerce(value.op1, types)} (to_int (^ 2 ${coerce(value.op2, types)})))"
                     } // TODO: make out the difference between signed and unsigned
 
                     " << " to false -> {
                         val types = listOf(value.op1.type, value.op2.type)
-                        "(* ${coerce(value.op1, types)} (^ 2 ${coerce(value.op2, types)}))"
+                        "(* ${coerce(value.op1, types)} (to_int (^ 2 ${coerce(value.op2, types)})))"
                     } // TODO: use with bv model of int
 
                     " cmpg " to false, " cmpl " to false, " cmp " to false -> {
