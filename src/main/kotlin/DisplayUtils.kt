@@ -45,6 +45,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             val derefName = if (varName is RefType) varName.sootClass else varName
             when (derefName) {
                 IntType.v() -> return "Int"
+                LongType.v() -> return "Int"
                 ByteType.v() -> return "Int" // TODO: temporarily use int for computer int and byte type
                 VoidType.v() -> return "void"
                 CharType.v() -> return "Int"
@@ -91,7 +92,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             if (typeClasses.contains(BooleanType.v()) && valueToBeCoerced.type is IntType)
                 return "(ite (= 1 ${transformValue(valueToBeCoerced)}) true false)" // special downcast
             if (typeClasses.any { it is DoubleType } && valueToBeCoerced.type is IntType)
-                return "((_ to_fp 11 53) roundNearestTiesToEven (to_real ${transformValue(valueToBeCoerced)}))" // TODO: support comprehensive floating point representation
+                return "((_ to_fp 11 53) roundNearestTiesToEven (to_real ${transformValue(valueToBeCoerced)}))" // TODO: support complete floating point representation
             if (typeClasses.any { it is FloatType } && valueToBeCoerced.type is IntType)
                 return "((_ to_fp 8 24) roundNearestTiesToEven (to_real ${transformValue(valueToBeCoerced)}))"
             if (typeClasses.size == 1 && isNotSameTypeButCastable(valueToBeCoerced.type, typeClasses[0] as Type)
@@ -219,13 +220,6 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                         funcName, (listOf(value.base) + value.args),
                         (listOf(value.method.declaringClass) + value.method.parameterTypes), value.method.returnType
                     )
-
-//                if (funcName.contains("read")) { // TODO: remove magic word "read" here
-//                    val objectsToReassign = listOf(value.base)
-//                    post = objectsToReassign.joinToString("") {
-//                        "\n(declare-const ${transformDefinitionName(it)} ${transformName(it.type)})"
-//                    }
-//                }
                 }
 
                 //is GNewInvokeExpr -> "${value.baseType}_${value.method.name}(${(value.args).joinToString(", ")})"
@@ -286,6 +280,13 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     }
                 }
 
+                is NullConstant -> {
+                    placeholderDeclarations["null-NullType"] =
+                        NullType.v()
+                    "null-NullType"
+                }
+                is FloatConstant -> "((_ to_fp 8 24) roundNearestTiesToEven ${value.value})"
+                is DoubleConstant -> "((_ to_fp 11 53) roundNearestTiesToEven ${value.value})"
                 is ClassConstant -> "${transformName(value.toSootType())}!class"
                 is StringConstant -> value.toString() // escape string
                     .replace("\\\\", "\\u005c")
