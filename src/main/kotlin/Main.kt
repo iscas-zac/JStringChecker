@@ -6,9 +6,13 @@ import java.util.*
 
 
 fun main(args: Array<String>) {
-
-    for (pathsOfFunc in slice(args[0])) { // write to .path files
-        val dir = File("paths", "method-" + pathsOfFunc.key.replace("<", "《").replace(">", "》"))
+    val dataRoot = File(args[0])
+    if (!dataRoot.isDirectory() && !dataRoot.mkdir()) return
+    val jar = dataRoot.listFiles { _, name -> name.contains(".jar") }?.first()!!
+    val smtFolder = File(dataRoot, "smt")
+    if (!smtFolder.isDirectory() && !smtFolder.mkdir()) return
+    for (pathsOfFunc in slice(jar.absolutePath)) { // write to .path files
+        val dir = File(smtFolder, "method-" + pathsOfFunc.key.replace("<", "《").replace(">", "》"))
         if (dir.isDirectory() || dir.mkdir()) {
             pathsOfFunc.value.filter { it.isStringRelated() }.take(10000).forEachIndexed { index, slicer ->
                 val (normal, deviants) = compatibleSmtlibTransformer(slicer)
@@ -17,7 +21,7 @@ fun main(args: Array<String>) {
                     File(dir, "$index-deviant-$num.path").writeText(text)
                 }
             }
-            println(pathsOfFunc.key + "     "+ pathsOfFunc.value.size)
+            println(pathsOfFunc.key + "    " + pathsOfFunc.value.filter { it.isStringRelated() }.size + " / " + pathsOfFunc.value.size)
             println(pathsOfFunc.value.any { it.isStringRelated() })
         }
     }
