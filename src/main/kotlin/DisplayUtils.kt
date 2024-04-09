@@ -29,7 +29,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         /**
          * global configurations of an SMT file, namely special assertions or sort declarations for now
          */
-        var header = "(declare-sort void)\n(declare-sort Iterator)\n(declare-sort ClassObject)\n" // TODO: temporarily use a customized void type
+        var header = "(declare-sort void)\n(declare-sort Iterator)\n" // TODO: temporarily use a customized void type
         // TODO: move some on-the-fly sort declaration to one place
         var trailor = ""
         /**
