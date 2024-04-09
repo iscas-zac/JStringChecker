@@ -51,7 +51,11 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 CharType.v() -> return "Int"
                 FloatType.v() -> return "Float32"
                 DoubleType.v() -> return "Float64"
-                Scene.v().getSootClass("java.lang.Class") -> return "ClassObject" // TODO: a temp fix for a mutual upcast-able situation in reflection
+                Scene.v().getSootClass("java.lang.Class") -> {
+                    publicSymbols["ClassObject"] = derefName
+                    reversePublicSymbols[derefName] = "ClassObject"
+                    return "ClassObject"
+                } // TODO: a temp fix for a mutual upcast-able situation in reflection
                 Scene.v().getSootClass("java.reflect.Type") -> return "ClassObject"
                 Scene.v().getSootClass("java.lang.String") -> return "String"
                 Scene.v().getSootClass("java.lang.CharSequence") -> return "String"
@@ -299,7 +303,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 is ClassConstant -> {
                     val className = transformName(value.toSootType())
                     if (!className.contains("var")) // TODO: make it more specific
-                        this.header += "(declare-const $className!class ${transformName(value.type)})"
+                        this.header += "(declare-const $className!class ${transformName(value.type)})\n"
                     "$className!class"
                 }
                 is StringConstant -> value.toString() // escape string
