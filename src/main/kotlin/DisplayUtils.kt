@@ -52,6 +52,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 FloatType.v() -> return "Float32"
                 DoubleType.v() -> return "Float64"
                 Scene.v().getSootClass("java.lang.String") -> return "String"
+                Scene.v().getSootClass("java.lang.CharSequence") -> return "String"
                 Scene.v().getSootClass("java.lang.StringBuilder") -> return "String"
                 Scene.v().getSootClass("java.lang.StringBuffer") -> return "String"
                 Scene.v().getSootClass("java.util.Iterator") -> return "Iterator"
@@ -98,6 +99,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             if (typeClasses.size == 1 && isNotSameTypeButCastable(valueToBeCoerced.type, typeClasses[0] as Type)
             ) { // only upcast for now
                 val typeToCoerce = typeClasses[0]
+                if (valueToBeCoerced.type.toString().contains("java.lang.Class") && typeToCoerce.toString().contains("reflect.Type"))
+                    return transformValue(valueToBeCoerced) // TODO: a temp fix for a mutual upcast-able situation in reflection
                 val castFuncName = "cast-from-${
                     transformName(valueToBeCoerced.type).replace(
                         "[( )]".toRegex(),
@@ -285,9 +288,20 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                         NullType.v()
                     "null-NullType"
                 }
+                is IntConstant -> {
+                    value.value.toString()
+                }
+                is LongConstant -> {
+                    value.value.toString()
+                }
                 is FloatConstant -> "((_ to_fp 8 24) roundNearestTiesToEven ${value.value})"
                 is DoubleConstant -> "((_ to_fp 11 53) roundNearestTiesToEven ${value.value})"
-                is ClassConstant -> "${transformName(value.toSootType())}!class"
+                is ClassConstant -> {
+                    val className = transformName(value.toSootType())
+                    if (!className.contains("var")) // TODO: make it more specific
+                        this.header += "(declare-const $className!class ${transformName(value.type)})"
+                    "$className!class"
+                }
                 is StringConstant -> value.toString() // escape string
                     .replace("\\\\", "\\u005c")
                     .replace("\\\"", "\\u0022")
