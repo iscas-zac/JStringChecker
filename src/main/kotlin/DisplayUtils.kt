@@ -56,7 +56,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     reversePublicSymbols[derefName] = "ClassObject"
                     return "ClassObject"
                 } // TODO: a temp fix for a mutual upcast-able situation in reflection
-                Scene.v().getSootClass("java.reflect.Type") -> return "ClassObject"
+                Scene.v().getSootClass("java.lang.reflect.Type") -> return "ClassObject"
                 Scene.v().getSootClass("java.lang.String") -> return "String"
                 Scene.v().getSootClass("java.lang.CharSequence") -> return "String"
                 Scene.v().getSootClass("java.lang.StringBuilder") -> return "String"
