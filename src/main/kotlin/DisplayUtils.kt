@@ -29,7 +29,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         /**
          * global configurations of an SMT file, namely special assertions or sort declarations for now
          */
-        var header = "(declare-sort void)\n(declare-sort Iterator)\n" // TODO: temporarily use a customized void type
+        var header = "(declare-sort void)\n(declare-sort Iterator)\n(declare-sort ClassObject)\n" // TODO: temporarily use a customized void type
         // TODO: move some on-the-fly sort declaration to one place
         var trailor = ""
         /**
@@ -51,6 +51,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 CharType.v() -> return "Int"
                 FloatType.v() -> return "Float32"
                 DoubleType.v() -> return "Float64"
+                Scene.v().getSootClass("java.lang.Class") -> return "ClassObject" // TODO: a temp fix for a mutual upcast-able situation in reflection
+                Scene.v().getSootClass("java.reflect.Type") -> return "ClassObject"
                 Scene.v().getSootClass("java.lang.String") -> return "String"
                 Scene.v().getSootClass("java.lang.CharSequence") -> return "String"
                 Scene.v().getSootClass("java.lang.StringBuilder") -> return "String"
@@ -99,8 +101,6 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             if (typeClasses.size == 1 && isNotSameTypeButCastable(valueToBeCoerced.type, typeClasses[0] as Type)
             ) { // only upcast for now
                 val typeToCoerce = typeClasses[0]
-                if (valueToBeCoerced.type.toString().contains("java.lang.Class") && typeToCoerce.toString().contains("reflect.Type"))
-                    return transformValue(valueToBeCoerced) // TODO: a temp fix for a mutual upcast-able situation in reflection
                 val castFuncName = "cast-from-${
                     transformName(valueToBeCoerced.type).replace(
                         "[( )]".toRegex(),
