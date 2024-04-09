@@ -364,19 +364,21 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                         "(mod ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
                     }
 
-                    " && " to false, " & " to false -> {
-                        val types = listOf(value.op1.type, value.op2.type, BooleanType.v())
-                        "(ite (and ${coerce(value.op1, types)} ${coerce(value.op2, types)}) 1 0)"
+                    " && " to false, " || " to false -> { throw RuntimeException("not handled") }
+
+                    " & " to false -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(bv2int (bvand ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
                     } // add ite to cast to int, be compatible with the bytecode behavior
 
-                    " || " to false, " | " to false -> {
-                        val types = listOf(value.op1.type, value.op2.type, BooleanType.v())
-                        "(ite (or ${coerce(value.op1, types)} ${coerce(value.op2, types)}) 1 0)"
+                    " | " to false -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(bv2int (bvor ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
                     }
 
                     " ^ " to false -> {
                         val types = listOf(value.op1.type, value.op2.type)
-                        "(ite (xor ${coerce(value.op1, types)} ${coerce(value.op2, types)}) 1 0)"
+                        "(bv2int (bvxor ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
                     }
 
                     " >> " to false, " >>> " to false -> {
