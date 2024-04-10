@@ -158,10 +158,16 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 }
 
                 is NewArrayExpr -> {
-                    // TODO: multi-dimension array
                     val funcName = "arr-${transformName(value.baseType)}-init"
                     // TODO: array bound
                     functions.putIfAbsent(funcName, listOf<Any>() to ArrayType.v(value.baseType, 1))
+                    funcName
+                }
+
+                is NewMultiArrayExpr -> {
+                    val funcName = "arr-${transformName(value.baseType)}-${value.sizeCount}-init"
+                    // TODO: array bound
+                    functions.putIfAbsent(funcName, listOf<Any>() to ArrayType.v(value.baseType, value.sizeCount))
                     funcName
                 }
 
