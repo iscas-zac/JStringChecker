@@ -47,16 +47,15 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 IntType.v() -> return "Int"
                 LongType.v() -> return "Int"
                 ByteType.v() -> return "Int" // TODO: temporarily use int for computer int and byte type
-                VoidType.v() -> return "void"
                 CharType.v() -> return "Int"
+                VoidType.v() -> return "void"
                 FloatType.v() -> return "Float32"
                 DoubleType.v() -> return "Float64"
-                Scene.v().getSootClass("java.lang.Class") -> {
+                Scene.v().getSootClass("java.lang.Class"), Scene.v().getSootClass("java.lang.reflect.Type") -> {
                     publicSymbols["ClassObject"] = derefName
                     reversePublicSymbols[derefName] = "ClassObject"
                     return "ClassObject"
                 } // TODO: a temp fix for a mutual upcast-able situation in reflection
-                Scene.v().getSootClass("java.lang.reflect.Type") -> return "ClassObject"
                 Scene.v().getSootClass("java.lang.String") -> return "String"
                 Scene.v().getSootClass("java.lang.CharSequence") -> return "String"
                 Scene.v().getSootClass("java.lang.StringBuilder") -> return "String"
