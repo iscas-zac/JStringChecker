@@ -166,7 +166,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 is NewMultiArrayExpr -> {
                     val funcName = "arr-${transformName(value.baseType)}-${value.sizeCount}-init"
                     // TODO: array bound
-                    functions.putIfAbsent(funcName, listOf<Any>() to ArrayType.v(value.baseType, value.sizeCount))
+                    functions.putIfAbsent(funcName, listOf<Any>() to ArrayType.v(value.baseType.baseType, value.sizeCount))
                     funcName
                 }
 
@@ -598,7 +598,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
     } + placeholderDeclarations.map { (name, ty) -> "(declare-const $name ${bundle.transformName(ty)})\n" }
         .joinToString("")
     // if the code uses the class constants, add the SootClasses also as concrete values
-    val reflectionClass = if (publicSymbols.values.toString().contains("java.lang.Class"))
+    // as publicSymbols["ClassObject"] can be "java.lang.reflect.Type" now, we need to use reverse as the condition
+    val reflectionClass = if (reversePublicSymbols.keys.toString().contains("java.lang.Class"))
         bundle.transformName(Scene.v().getSootClass("java.lang.Class"))
     else ""
     header =
