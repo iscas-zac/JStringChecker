@@ -62,8 +62,9 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 Scene.v().getSootClass("java.lang.StringBuffer") -> return "String"
                 Scene.v().getSootClass("java.util.Iterator") -> return "Iterator"
 //                Scene.v().getSootClass("java.util.List") -> return ""
-                ArrayType.v(CharType.v(), 1) -> return "(Array Int Int)" // to be added
+                ArrayType.v(CharType.v(), 1) -> return "(Array Int Int)" // TODO: remove these 2 lines and add multi-array support
                 ArrayType.v(RefType.v("java.lang.String"), 1) -> return "(Array Int String)"
+                is ArrayType -> if (derefName.numDimensions == 1) return "(Array Int ${transformName(derefName.baseType)})"
                 BooleanType.v() -> return "Bool"
             }
             val sym = reversePublicSymbols[derefName]
