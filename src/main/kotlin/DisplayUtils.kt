@@ -1,6 +1,5 @@
 import soot.*
 import soot.jimple.*
-import soot.jimple.internal.JIdentityStmt
 import soot.util.Numberable
 import kotlin.math.floor
 
@@ -29,9 +28,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         /**
          * global configurations of an SMT file, namely special assertions or sort declarations for now
          */
-        var header = "(declare-sort void)\n(declare-sort Iterator)\n" // TODO: temporarily use a customized void type
-        // TODO: move some on-the-fly sort declaration to one place
-        var trailor = ""
+        var header = "(declare-sort void)\n(declare-sort Iterator)\n(declare-sort ClassObject)\n" // TODO: temporarily use a customized void type
+        val classObjects: MutableSet<ClassConstant> = mutableSetOf()
         /**
          * pre-condition and post-condition of a statement, for example, `(assert (not (= this null)))` for some
          * statement `this.someMethod()` as a pre-condition
@@ -51,11 +49,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 VoidType.v() -> return "void"
                 FloatType.v() -> return "Float32"
                 DoubleType.v() -> return "Float64"
-                Scene.v().getSootClass("java.lang.Class"), Scene.v().getSootClass("java.lang.reflect.Type") -> {
-                    publicSymbols["ClassObject"] = derefName
-                    reversePublicSymbols[derefName] = "ClassObject"
-                    return "ClassObject"
-                } // TODO: a temp fix for a mutual upcast-able situation in reflection
+                Scene.v().getSootClass("java.lang.Class"), Scene.v().getSootClass("java.lang.reflect.Type") -> return "ClassObject"
                 Scene.v().getSootClass("java.lang.String") -> return "String"
                 Scene.v().getSootClass("java.lang.CharSequence") -> return "String"
                 Scene.v().getSootClass("java.lang.StringBuilder") -> return "String"
@@ -307,9 +301,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 is FloatConstant -> "((_ to_fp 8 24) roundNearestTiesToEven ${value.value})"
                 is DoubleConstant -> "((_ to_fp 11 53) roundNearestTiesToEven ${value.value})"
                 is ClassConstant -> {
+                    this.classObjects.add(value)
                     val className = transformName(value.toSootType())
-                    if (!className.contains("var")) // TODO: make it more specific
-                        this.header += "(declare-const $className!class ${transformName(value.type)})\n"
                     "$className!class"
                 }
                 is StringConstant -> value.toString() // escape string
@@ -598,21 +591,14 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         } + "\n"
     } + placeholderDeclarations.map { (name, ty) -> "(declare-const $name ${bundle.transformName(ty)})\n" }
         .joinToString("")
-    // if the code uses the class constants, add the SootClasses also as concrete values
-    // as publicSymbols["ClassObject"] can be "java.lang.reflect.Type" now, we need to use reverse as the condition
-    val reflectionClass = if (reversePublicSymbols.keys.toString().contains("java.lang.Class"))
-        bundle.transformName(Scene.v().getSootClass("java.lang.Class"))
-    else ""
+
     header =
                 "(set-option :produce-unsat-cores true) ; enable generation of unsat cores\n" +
                 "(set-option :produce-models true) ; enable model generation\n" +
                 "(set-option :produce-proofs true) ; enable proof generation\n" + "(set-logic ALL)\n" +
                 publicSymbols.keys.filter { publicSymbols[it] is Type || publicSymbols[it] is SootClass }
                     .joinToString("") { "(declare-sort $it)\n" } + bundle.header +
-                (if (reflectionClass.isNotEmpty())
-                    publicSymbols.keys.filter { publicSymbols[it] is Type || publicSymbols[it] is SootClass }
-                        .joinToString("") { "(declare-const $it!class $reflectionClass)\n" }
-                else "") +
+                bundle.classObjects.joinToString("") { "(declare-const ${bundle.transformName(it.toSootType())}!class ClassObject)\n" } +
                 header
     val trailer =
         "\n(check-sat)\n(get-model)\n(get-unsat-core)\n; " + functions.toString() + "\n; " + publicSymbols.toString() + "\n; " + reversePublicSymbols.toString()
