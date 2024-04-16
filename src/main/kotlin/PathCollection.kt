@@ -83,7 +83,7 @@ class Slicer(val programPath: List<Block>) {
                                 .toList() + Nop()
                             ).zip(jumpStatement.targets)
                         } else {
-                            println("not support type")
+                            println("not support type of $jumpStatement")
                             throw RuntimeException("switch condition check fail")
                         }
                         for ((cond, target) in table) {
@@ -98,7 +98,7 @@ class Slicer(val programPath: List<Block>) {
                         if (res.isEmpty()) Nop()
                         else res.fold(Nop()) { acc: Condition, condition -> Intersect(condition, acc) }
                     }
-                    else Nop("DEBUG: $jumpStatement")
+                    else Nop("DEBUG: $jumpStatement") // TODO: add an exception item
                 }
             }
         return constraintChain as List<Condition>
