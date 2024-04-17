@@ -42,13 +42,11 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         fun transformName(varName: Any): String {
             val derefName = if (varName is RefType) varName.sootClass else varName
             when (derefName) {
-                IntType.v() -> return "Int"
-                LongType.v() -> return "Int"
-                ByteType.v() -> return "Int" // TODO: temporarily use int for computer int and byte type
-                CharType.v() -> return "Int"
-                VoidType.v() -> return "void"
-                FloatType.v() -> return "Float32"
-                DoubleType.v() -> return "Float64"
+                // TODO: temporarily use int for computer int and byte type
+                is IntType, is LongType, is ByteType, is CharType, is ShortType -> return "Int"
+                is VoidType -> return "void"
+                is FloatType -> return "Float32"
+                is DoubleType -> return "Float64"
                 Scene.v().getSootClass("java.lang.Class"), Scene.v().getSootClass("java.lang.reflect.Type") -> return "ClassObject"
                 Scene.v().getSootClass("java.lang.String") -> return "String"
                 Scene.v().getSootClass("java.lang.CharSequence") -> return "String"
@@ -56,10 +54,10 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 Scene.v().getSootClass("java.lang.StringBuffer") -> return "String"
                 Scene.v().getSootClass("java.util.Iterator") -> return "Iterator"
 //                Scene.v().getSootClass("java.util.List") -> return ""
-                ArrayType.v(CharType.v(), 1) -> return "(Array Int Int)" // TODO: remove these 2 lines and add multi-array support
-                ArrayType.v(RefType.v("java.lang.String"), 1) -> return "(Array Int String)"
+//                ArrayType.v(CharType.v(), 1) -> return "(Array Int Int)" // TODO: remove these 2 lines and add multi-array support
+//                ArrayType.v(RefType.v("java.lang.String"), 1) -> return "(Array Int String)"
                 is ArrayType -> if (derefName.numDimensions == 1) return "(Array Int ${transformName(derefName.baseType)})"
-                BooleanType.v() -> return "Bool"
+                is BooleanType -> return "Bool"
             }
             val sym = reversePublicSymbols[derefName]
             if (sym == null) {

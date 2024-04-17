@@ -14,7 +14,6 @@ fun main(args: Array<String>) {
     for (pathsOfFunc in slice(jar.absolutePath)) { // write to .path files
         val dir = File(smtFolder, "method-" + pathsOfFunc.key.replace("<", "《").replace(">", "》"))
         if (dir.isDirectory() || dir.mkdir()) {
-            pathsOfFunc.value.filter { it.isStringRelated() }.take(10000).forEachIndexed { index, slicer ->
             val (b, slices) = pathsOfFunc.value
             slices.filter { it.isStringRelated() }.take(10000).forEachIndexed { index, slicer ->
                 val (normal, deviants) = compatibleSmtlibTransformer(slicer)
