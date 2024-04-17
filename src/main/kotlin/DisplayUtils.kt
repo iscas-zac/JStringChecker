@@ -98,12 +98,9 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             ) { // only upcast for now
                 val typeToCoerce = typeClasses[0]
                 val castFuncName = "cast-from-${
-                    transformName(valueToBeCoerced.type).replace(
-                        "[( )]".toRegex(),
-                        "__"
-                    ) // deal with compound (array) type
+                    inlineArrayName(valueToBeCoerced.type) // deal with compound (array) type
                 }-to-${
-                    transformName(typeToCoerce).replace("[( )]".toRegex(), "__")
+                    inlineArrayName(typeToCoerce as Type)
                 }"
                 functions.putIfAbsent(
                     castFuncName,
@@ -150,15 +147,15 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 }
 
                 is NewArrayExpr -> {
-                    val funcName = "arr-${transformName(value.baseType)}-init"
+                    val funcName = "arr-${inlineArrayName(value.baseType)}-init"
                     // TODO: array bound
                     functions.putIfAbsent(funcName, listOf<Any>() to ArrayType.v(value.baseType, 1))
                     funcName
                 }
 
                 is NewMultiArrayExpr -> {
-                    val funcName = "arr-${transformName(value.baseType)}-${value.sizeCount}-init"
-                    // TODO: array bound
+                    val funcName = "arr-${inlineArrayName(value.baseType.baseType)}-${value.sizeCount}-init"
+                    // TODO: array bound and multi-array refactor
                     functions.putIfAbsent(funcName, listOf<Any>() to ArrayType.v(value.baseType.baseType, value.sizeCount))
                     funcName
                 }
@@ -432,9 +429,9 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 is Local -> transformName(value)
                 is CastExpr -> {
                     val castFuncName = "cast-from-${
-                        transformName(value.op.type).replace("[( )]".toRegex(), "__")
+                        inlineArrayName(value.op.type)
                     }-to-${
-                        transformName(value.castType).replace("[( )]".toRegex(), "__")
+                        inlineArrayName(value.castType)
                     }"
                     functions.putIfAbsent(
                         castFuncName,
@@ -472,6 +469,11 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 else -> value.toString()// + value.javaClass
             }
         }
+
+        private fun inlineArrayName(v: Type) = transformName(v).replace(
+            "[( )]".toRegex(),
+            "__"
+        )
 
         /**
          * declare a name (`lvalue`) or define a name (`lvalue`)  to be `rvalue`, given the type `ty` of `lvalue` as
