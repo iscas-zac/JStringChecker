@@ -28,7 +28,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         /**
          * global configurations of an SMT file, namely special assertions or sort declarations for now
          */
-        var header = "(declare-sort void)\n(declare-sort Iterator)\n(declare-sort ClassObject)\n" // TODO: temporarily use a customized void type
+        var header = "(declare-sort void 0)\n(declare-sort Iterator 0)\n(declare-sort ClassObject 0)\n" // TODO: temporarily use a customized void type
         val classObjects: MutableSet<ClassConstant> = mutableSetOf()
         /**
          * pre-condition and post-condition of a statement, for example, `(assert (not (= this null)))` for some
@@ -366,17 +366,17 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
 
                     " & " to false -> {
                         val types = listOf(value.op1.type, value.op2.type)
-                        "(bv2int (bvand ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
+                        "(bv2nat (bvand ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
                     } // add ite to cast to int, be compatible with the bytecode behavior
 
                     " | " to false -> {
                         val types = listOf(value.op1.type, value.op2.type)
-                        "(bv2int (bvor ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
+                        "(bv2nat (bvor ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
                     }
 
                     " ^ " to false -> {
                         val types = listOf(value.op1.type, value.op2.type)
-                        "(bv2int (bvxor ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
+                        "(bv2nat (bvxor ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
                     }
 
                     " >> " to false, " >>> " to false -> {
@@ -597,7 +597,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 "(set-option :produce-models true) ; enable model generation\n" +
                 "(set-option :produce-proofs true) ; enable proof generation\n" + "(set-logic ALL)\n" +
                 publicSymbols.keys.filter { publicSymbols[it] is Type || publicSymbols[it] is SootClass }
-                    .joinToString("") { "(declare-sort $it)\n" } + bundle.header +
+                    .joinToString("") { "(declare-sort $it 0)\n" } + bundle.header +
                 bundle.classObjects.joinToString("") { "(declare-const ${bundle.transformName(it.toSootType())}!class ClassObject)\n" } +
                 header
     val trailer =
