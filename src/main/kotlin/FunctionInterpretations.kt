@@ -134,11 +134,6 @@ const val trim_sig = "<java.lang.String: java.lang.String trim()>"
 const val next_sig = "<java.util.Iterator: java.lang.Object next()>"
 
 fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): List<SExpression> {
-    fun listOfCasts(): Map<String, SExpression> {
-        val funcs = mutableMapOf<String, SExpression>()
-
-        return funcs
-    }
 
     fun listOfStringApis(): Map<String, SExpression> {
         // also refer to https://github.com/jiaxy/jconcolic/blob/master/jconcolic-core/src/main/java/edu/whu/jconcolic/solver/SMT2Visitor.java#L392
@@ -627,10 +622,28 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
         return funcs
     }
 
+    fun trivialCasts(name: String, types: Pair<List<Any>, Any>): SList? {
+        try {
+            val (ty1, ty2) = name.removePrefix("cast-from-").split("-to-")
+            if (ty1 == ty2)
+                if (types.first.size == 1 && types.first[0] == types.second)
+                    return SList(
+                        "define-fun",
+                        name,
+                        SList(
+                            SList("arg", types.first[0])
+                        ),
+                        types.second,
+                        "arg"
+                    )
+        } catch (_: Throwable) {} finally {}
+        return null
+    }
+
     val funcs = listOfStringApis()
     // only the used functions of above (as well as their helpers) are included
     return functions.map { (name, types) ->
-        funcs[name] ?: SList(
+        funcs[name] ?: trivialCasts(name, types) ?: SList(
             "declare-fun",
             name,
             SList(
