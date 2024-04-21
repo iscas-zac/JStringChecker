@@ -1,4 +1,8 @@
-$directoryPath = "D:\IdeaProjects\test_native_build\paths\"
+param(
+    [string]
+    $directoryPath = "D:\IdeaProjects\paths\gson"
+)
+
 $smt2Files = Get-ChildItem -Path $directoryPath -Recurse -File -Filter "*.path"
 
 $validCount = 0
@@ -6,15 +10,25 @@ $invalidCount = 0
 
 $slowest = 0
 $slowestFile = $null
+
+$totalCount = $smt2Files.Count
+$cnt = 0
 foreach ($file in $smt2Files) {
-    $measure = Measure-Command { 
+    $measure = Measure-Command {
+        # $errOut = & { $global:z3Output = z3 -smt2 $file.FullName } 2>&1
         $z3Output = & z3 -smt2 $file.FullName
     }
+    if ($errOut) {
+        Write $errOut
+        Write $file.FullName
+        break
+    }
+
     # Write $file.FullName
     # Write $z3Output
 
     # Check if Z3 output indicates the file is valid (this is a placeholder condition)
-    if ($z3Output | Select-String "\(error" | Select-String -NotMatch "unsat core" | Select-String -NotMatch "model is not available") {
+    if ($z3Output | Select-String '\(error "line' | Select-String -NotMatch "unsat core" | Select-String -NotMatch "model is not available") {
         $invalidCount++
         Write-Host "Invalid file: $($file.FullName)"
     } else {
@@ -25,6 +39,10 @@ foreach ($file in $smt2Files) {
         $slowest = $measure.TotalSeconds
         $slowestFile = $file.FullName
     }
+
+    $cnt++
+    Write-Host "`r$($cnt)/$totalCount" -NoNewline
+    Write-Host "`r" -NoNewline
 }
 
 Write-Host "Total valid SMT2 files: $validCount"
