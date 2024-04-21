@@ -113,7 +113,7 @@ class Slicer(val programPath: List<Block>) {
                 (programPath.getOrNull(0)?.map { Statement(it as Stmt) } ?: emptyList())
     }
 
-    private fun getApiTypes(): Map<SootMethod, Int> {
+    fun getApiTypes(): Map<SootMethod, Int> {
         return stmts.mapNotNull { unit ->
             if ((unit as Stmt).containsInvokeExpr())
                 unit.invokeExpr.method

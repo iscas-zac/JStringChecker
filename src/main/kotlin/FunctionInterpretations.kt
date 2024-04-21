@@ -130,6 +130,202 @@ const val trim_sig = "<java.lang.String: java.lang.String trim()>"
 //<java.lang.String: java.lang.String intern()>
 //<java.lang.String: int compareTo(java.lang.Object)>
 
+//const val toString_sig = "<java.lang.StringBuffer: java.lang.String toString()>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(float)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(double)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(java.lang.CharSequence)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(boolean)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(char)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(int)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(java.lang.StringBuffer)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(long)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(char)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(int)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(long)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(float)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(double)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(java.lang.CharSequence,int,int)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(char[])>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(char[],int,int)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(boolean)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.Appendable append(java.lang.CharSequence)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(java.lang.String)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.Object)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(java.lang.Object)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.Appendable append(char)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.Appendable append(java.lang.CharSequence,int,int)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.CharSequence)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.CharSequence,int,int)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(char[])>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.StringBuffer)>"
+//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(char[],int,int)>"
+//const val indexOf_sig = "<java.lang.StringBuffer: int indexOf(java.lang.String)>"
+//const val indexOf_sig = "<java.lang.StringBuffer: int indexOf(java.lang.String,int)>"
+//const val length_sig = "<java.lang.StringBuffer: int length()>"
+//const val charAt_sig = "<java.lang.StringBuffer: char charAt(int)>"
+//const val codePointAt_sig = "<java.lang.StringBuffer: int codePointAt(int)>"
+//const val codePointBefore_sig = "<java.lang.StringBuffer: int codePointBefore(int)>"
+//const val codePointCount_sig = "<java.lang.StringBuffer: int codePointCount(int,int)>"
+//const val offsetByCodePoints_sig = "<java.lang.StringBuffer: int offsetByCodePoints(int,int)>"
+//const val getChars_sig = "<java.lang.StringBuffer: void getChars(int,int,char[],int)>"
+//const val lastIndexOf_sig = "<java.lang.StringBuffer: int lastIndexOf(java.lang.String,int)>"
+//const val lastIndexOf_sig = "<java.lang.StringBuffer: int lastIndexOf(java.lang.String)>"
+//const val substring_sig = "<java.lang.StringBuffer: java.lang.String substring(int)>"
+//const val substring_sig = "<java.lang.StringBuffer: java.lang.String substring(int,int)>"
+//const val subSequence_sig = "<java.lang.StringBuffer: java.lang.CharSequence subSequence(int,int)>"
+//const val replace_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder replace(int,int,java.lang.String)>"
+//const val replace_sig = "<java.lang.StringBuffer: java.lang.StringBuffer replace(int,int,java.lang.String)>"
+//const val delete_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder delete(int,int)>"
+//const val delete_sig = "<java.lang.StringBuffer: java.lang.StringBuffer delete(int,int)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,char[])>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,java.lang.CharSequence)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,java.lang.CharSequence,int,int)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,boolean)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,java.lang.String)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,java.lang.Object)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,char[],int,int)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,java.lang.CharSequence)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,java.lang.CharSequence,int,int)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,boolean)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,char)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,int)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,float)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,double)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,char[],int,int)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,java.lang.Object)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,java.lang.String)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,char[])>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,double)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,float)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,long)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,int)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder insert(int,char)>"
+//const val insert_sig = "<java.lang.StringBuffer: java.lang.StringBuffer insert(int,long)>"
+//const val capacity_sig = "<java.lang.StringBuffer: int capacity()>"
+//const val ensureCapacity_sig = "<java.lang.StringBuffer: void ensureCapacity(int)>"
+//const val trimToSize_sig = "<java.lang.StringBuffer: void trimToSize()>"
+//const val setLength_sig = "<java.lang.StringBuffer: void setLength(int)>"
+//const val setCharAt_sig = "<java.lang.StringBuffer: void setCharAt(int,char)>"
+//const val appendCodePoint_sig = "<java.lang.StringBuffer: java.lang.StringBuffer appendCodePoint(int)>"
+//const val appendCodePoint_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder appendCodePoint(int)>"
+//const val deleteCharAt_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder deleteCharAt(int)>"
+//const val deleteCharAt_sig = "<java.lang.StringBuffer: java.lang.StringBuffer deleteCharAt(int)>"
+//const val reverse_sig = "<java.lang.StringBuffer: java.lang.StringBuffer reverse()>"
+//const val reverse_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder reverse()>"
+//const val wait_sig = "<java.lang.StringBuffer: void wait(long,int)>"
+//const val wait_sig = "<java.lang.StringBuffer: void wait(long)>"
+//const val wait_sig = "<java.lang.StringBuffer: void wait()>"
+//const val equals_sig = "<java.lang.StringBuffer: boolean equals(java.lang.Object)>"
+//const val hashCode_sig = "<java.lang.StringBuffer: int hashCode()>"
+//const val getClass_sig = "<java.lang.StringBuffer: java.lang.Class<?> getClass()>"
+//const val notify_sig = "<java.lang.StringBuffer: void notify()>"
+//const val notifyAll_sig = "<java.lang.StringBuffer: void notifyAll()>"
+//const val chars_sig = "<java.lang.StringBuffer: java.util.stream.IntStream chars()>"
+//const val codePoints_sig = "<java.lang.StringBuffer: java.util.stream.IntStream codePoints()>"
+
+
+const val sb_init_sig = "<java.lang.StringBuilder: void <init>(java.lang.String)>"
+const val sb_toString_sig = "<java.lang.StringBuilder: java.lang.String toString()>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(long)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(int)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(char)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(boolean)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(java.lang.CharSequence,int,int)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.Appendable append(java.lang.CharSequence)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(double)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(float)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(java.lang.StringBuffer)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(java.lang.String)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(java.lang.Object)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.Appendable append(char)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(char[],int,int)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(char[])>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.Appendable append(java.lang.CharSequence,int,int)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(java.lang.CharSequence)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(boolean)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.CharSequence)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(char)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(int)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.StringBuffer)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(char[])>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.CharSequence,int,int)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(double)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(char[],int,int)>"
+const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.Object)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(long)>"
+//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(float)>"
+//const val indexOf_sig = "<java.lang.StringBuilder: int indexOf(java.lang.String,int)>"
+//const val indexOf_sig = "<java.lang.StringBuilder: int indexOf(java.lang.String)>"
+//const val length_sig = "<java.lang.StringBuilder: int length()>"
+//const val charAt_sig = "<java.lang.StringBuilder: char charAt(int)>"
+//const val codePointAt_sig = "<java.lang.StringBuilder: int codePointAt(int)>"
+//const val codePointBefore_sig = "<java.lang.StringBuilder: int codePointBefore(int)>"
+//const val codePointCount_sig = "<java.lang.StringBuilder: int codePointCount(int,int)>"
+//const val offsetByCodePoints_sig = "<java.lang.StringBuilder: int offsetByCodePoints(int,int)>"
+//const val getChars_sig = "<java.lang.StringBuilder: void getChars(int,int,char[],int)>"
+//const val lastIndexOf_sig = "<java.lang.StringBuilder: int lastIndexOf(java.lang.String,int)>"
+//const val lastIndexOf_sig = "<java.lang.StringBuilder: int lastIndexOf(java.lang.String)>"
+//const val substring_sig = "<java.lang.StringBuilder: java.lang.String substring(int)>"
+//const val substring_sig = "<java.lang.StringBuilder: java.lang.String substring(int,int)>"
+//const val subSequence_sig = "<java.lang.StringBuilder: java.lang.CharSequence subSequence(int,int)>"
+//const val replace_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder replace(int,int,java.lang.String)>"
+//const val replace_sig = "<java.lang.StringBuilder: java.lang.StringBuilder replace(int,int,java.lang.String)>"
+//const val delete_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder delete(int,int)>"
+//const val delete_sig = "<java.lang.StringBuilder: java.lang.StringBuilder delete(int,int)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,char[],int,int)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,long)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,double)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,float)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,long)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,int)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,java.lang.Object)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,double)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,float)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,java.lang.String)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,char[])>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,java.lang.CharSequence)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,java.lang.CharSequence,int,int)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,boolean)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.StringBuilder insert(int,char)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,boolean)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,java.lang.CharSequence,int,int)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,java.lang.CharSequence)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,char[])>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,java.lang.Object)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,java.lang.String)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,char[],int,int)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,char)>"
+//const val insert_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder insert(int,int)>"
+//const val capacity_sig = "<java.lang.StringBuilder: int capacity()>"
+//const val ensureCapacity_sig = "<java.lang.StringBuilder: void ensureCapacity(int)>"
+//const val trimToSize_sig = "<java.lang.StringBuilder: void trimToSize()>"
+//const val setLength_sig = "<java.lang.StringBuilder: void setLength(int)>"
+//const val setCharAt_sig = "<java.lang.StringBuilder: void setCharAt(int,char)>"
+//const val appendCodePoint_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder appendCodePoint(int)>"
+//const val appendCodePoint_sig = "<java.lang.StringBuilder: java.lang.StringBuilder appendCodePoint(int)>"
+//const val deleteCharAt_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder deleteCharAt(int)>"
+//const val deleteCharAt_sig = "<java.lang.StringBuilder: java.lang.StringBuilder deleteCharAt(int)>"
+//const val reverse_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder reverse()>"
+//const val reverse_sig = "<java.lang.StringBuilder: java.lang.StringBuilder reverse()>"
+//const val wait_sig = "<java.lang.StringBuilder: void wait(long,int)>"
+//const val wait_sig = "<java.lang.StringBuilder: void wait(long)>"
+//const val wait_sig = "<java.lang.StringBuilder: void wait()>"
+//const val equals_sig = "<java.lang.StringBuilder: boolean equals(java.lang.Object)>"
+//const val hashCode_sig = "<java.lang.StringBuilder: int hashCode()>"
+//const val getClass_sig = "<java.lang.StringBuilder: java.lang.Class<?> getClass()>"
+//const val notify_sig = "<java.lang.StringBuilder: void notify()>"
+//const val notifyAll_sig = "<java.lang.StringBuilder: void notifyAll()>"
+//const val chars_sig = "<java.lang.StringBuilder: java.util.stream.IntStream chars()>"
+//const val codePoints_sig = "<java.lang.StringBuilder: java.util.stream.IntStream codePoints()>"
+
+//const val toString_sig = "<java.lang.CharSequence: java.lang.String toString()>"
+//const val length_sig = "<java.lang.CharSequence: int length()>"
+//const val charAt_sig = "<java.lang.CharSequence: char charAt(int)>"
+//const val subSequence_sig = "<java.lang.CharSequence: java.lang.CharSequence subSequence(int,int)>"
+//const val chars_sig = "<java.lang.CharSequence: java.util.stream.IntStream chars()>"
+//const val codePoints_sig = "<java.lang.CharSequence: java.util.stream.IntStream codePoints()>"
 
 const val next_sig = "<java.util.Iterator: java.lang.Object next()>"
 
@@ -619,6 +815,41 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
             )
         )
 
+        funcs["<init>/${sb_init_sig.hashCode()}"] = SList(
+            "define-fun",
+            "<init>/${sb_init_sig.hashCode()}",
+            SList(
+                SList("s", "String")
+            ),
+            "String",
+            "s"
+        )
+
+        funcs["append/${append_sig.hashCode()}"] = SList(
+            "define-fun",
+            "append/${append_sig.hashCode()}",
+            SList(
+                SList("s", "String"),
+                SList("tail", "String")
+            ),
+            "String",
+            SList(
+                "str.++",
+                "s",
+                "tail"
+            )
+        )
+
+        funcs["toString/${sb_toString_sig.hashCode()}"] = SList(
+            "define-fun",
+            "toString/${sb_toString_sig.hashCode()}",
+            SList(
+                SList("s", "String")
+            ),
+            "String",
+            "s"
+        )
+
         return funcs
     }
 
@@ -769,6 +1000,44 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
 //                    "assert",
 //                    SList()
 //                )
+            )
+        }
+
+        "<init>/${sb_init_sig.hashCode()}" -> {
+            val sbObject = args[0]
+            val initializer = args[1]
+            val oldName = getName(sbObject)
+            TopLevel(
+                Atom(addReDeclarationOf(sbObject)),
+                SList(
+                    "assert",
+                    SList(
+                        "=",
+                        sbObject,
+                        initializer
+                    )
+                )
+            )
+        }
+
+        "append/${append_sig.hashCode()}" -> {
+            val sbObject = args[0]
+            val tail = args[1]
+            val oldName = getName(sbObject)
+            TopLevel(
+                Atom(addReDeclarationOf(sbObject)),
+                SList(
+                    "assert",
+                    SList(
+                        "=",
+                        sbObject,
+                        SList(
+                            "str.++",
+                            oldName,
+                            tail
+                        )
+                    )
+                )
             )
         }
 
