@@ -216,12 +216,19 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                         checkBaseNullity
                     }
 
-                // TODO: add post condition check here
-
-                    registerFunctionAndUpcastArguments(
+                    // enforce eval order by adding a temporary store
+                    val ret = registerFunctionAndUpcastArguments(
                         funcName, (listOf(value.base) + value.args),
                         (listOf(value.method.declaringClass) + value.method.parameterTypes), value.method.returnType
                     )
+
+                    post = postconditionOfFunctions(
+                        funcName,
+                        (listOf(value.base) + value.args),
+                        ::transformValue
+                    ) { v -> transformDefine(v.type, v) } ?.toStringWithTransformedName(::transformValueAsPossible) ?: ""
+
+                    ret
                 }
 
                 //is GNewInvokeExpr -> "${value.baseType}_${value.method.name}(${(value.args).joinToString(", ")})"
