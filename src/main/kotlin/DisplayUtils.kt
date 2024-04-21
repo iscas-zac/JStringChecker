@@ -195,7 +195,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                         funcName.dropWhile { it != '_' }.drop(1), // trim interface name
                         (listOf(value.base) + value.args),
                         ::transformValue
-                    ) { v -> transformDefine(v.type, v) } ?.toStringWithTransformedName(::transformName) ?: ""
+                    ) { v -> transformDefine(v.type, v) } ?.toStringWithTransformedName(::transformValueAsPossible) ?: ""
 
                     ret
                 }
@@ -477,6 +477,9 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             }
         }
 
+        fun transformValueAsPossible(v: Any) =
+            if (v is Value) transformValue(v) else transformName(v)
+
         private fun inlineArrayName(v: Type) = transformName(v).replace(
             "[( )]".toRegex(),
             "__"
@@ -594,7 +597,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
     // enforce the eval order of parsing functions before adding sorts
     var header = predefineFunctions(functions).joinToString("") { sExpression ->
         sExpression.toStringWithTransformedName {
-            bundle.transformName(it)
+            bundle.transformValueAsPossible(it)
         } + "\n"
     } + placeholderDeclarations.map { (name, ty) -> "(declare-const $name ${bundle.transformName(ty)})\n" }
         .joinToString("")
