@@ -320,12 +320,12 @@ const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append
 //const val chars_sig = "<java.lang.StringBuilder: java.util.stream.IntStream chars()>"
 //const val codePoints_sig = "<java.lang.StringBuilder: java.util.stream.IntStream codePoints()>"
 
-//const val toString_sig = "<java.lang.CharSequence: java.lang.String toString()>"
-//const val length_sig = "<java.lang.CharSequence: int length()>"
-//const val charAt_sig = "<java.lang.CharSequence: char charAt(int)>"
-//const val subSequence_sig = "<java.lang.CharSequence: java.lang.CharSequence subSequence(int,int)>"
-//const val chars_sig = "<java.lang.CharSequence: java.util.stream.IntStream chars()>"
-//const val codePoints_sig = "<java.lang.CharSequence: java.util.stream.IntStream codePoints()>"
+const val cs_toString_sig = "<java.lang.CharSequence: java.lang.String toString()>"
+const val cs_length_sig = "<java.lang.CharSequence: int length()>"
+const val cs_charAt_sig = "<java.lang.CharSequence: char charAt(int)>"
+const val cs_subSequence_sig = "<java.lang.CharSequence: java.lang.CharSequence subSequence(int,int)>"
+const val cs_chars_sig = "<java.lang.CharSequence: java.util.stream.IntStream chars()>"
+const val cs_codePoints_sig = "<java.lang.CharSequence: java.util.stream.IntStream codePoints()>"
 
 const val next_sig = "<java.util.Iterator: java.lang.Object next()>"
 
@@ -850,6 +850,85 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
             "s"
         )
 
+        funcs["length/${cs_length_sig.hashCode()}"] = SList(
+            "define-fun",
+            "length/${cs_length_sig.hashCode()}",
+            SList(
+                SList("s", "String")
+            ),
+            "Int",
+            SList("str.len", "s")
+        )
+
+        funcs["toString/${cs_toString_sig.hashCode()}"] = SList(
+            "define-fun",
+            "toString/${cs_toString_sig.hashCode()}",
+            SList(
+                SList("s", "String")
+            ),
+            "String",
+            "s"
+        )
+
+        funcs["charAt/${cs_charAt_sig.hashCode()}"] = SList(
+            "define-fun",
+            "charAt/${cs_charAt_sig.hashCode()}",
+            SList(
+                SList("s", "String"),
+                SList("index", "Int")
+            ),
+            "Int",
+            SList(
+                "str.to_code",
+                SList(
+                    "str.at",
+                    "s",
+                    "index"
+                )
+            )
+        )
+
+        funcs["subSequence/${cs_subSequence_sig.hashCode()}"] = SList(
+            "define-fun",
+            "subSequence/${cs_subSequence_sig.hashCode()}",
+            SList(
+                SList("s", "String"),
+                SList("begin", "Int"),
+                SList("end", "Int")
+            ),
+            "String",
+            SList(
+                "str.substr",
+                "s",
+                "begin",
+                SList(
+                    "-",
+                    "end",
+                    "begin"
+                )
+            )
+        )
+
+//        funcs["chars/${cs_chars_sig.hashCode()}"] = SList(
+//            "define-fun",
+//            "chars/${cs_chars_sig.hashCode()}",
+//            SList(
+//                SList("s", "CharSequence")
+//            ),
+//            "java.util.stream.IntStream",
+//            SList("str.chars", "s")
+//        )
+
+//        funcs["codePoints/${cs_codePoints_sig.hashCode()}"] = SList(
+//            "define-fun",
+//            "codePoints/${cs_codePoints_sig.hashCode()}",
+//            SList(
+//                SList("s", "CharSequence")
+//            ),
+//            "java.util.stream.IntStream",
+//            SList("str.codepoints", "s")
+//        )
+
         return funcs
     }
 
@@ -857,7 +936,7 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
         try {
             val (ty1, ty2) = name.removePrefix("cast-from-").split("-to-")
             if (ty1 == ty2)
-                if (types.first.size == 1 && types.first[0] == types.second)
+                if (types.first.size == 1)
                     return SList(
                         "define-fun",
                         name,
@@ -939,7 +1018,7 @@ fun preconditionOfFunctions(name: String, args: List<String>): SExpression? {
                 )
             )
         }
-        "substring/${substring1_sig.hashCode()}" -> {
+        "substring/${substring1_sig.hashCode()}", "subSequence/${cs_subSequence_sig.hashCode()}" -> {
             val s = args[0]
             val begin = args[1]
             SList(
@@ -959,7 +1038,7 @@ fun preconditionOfFunctions(name: String, args: List<String>): SExpression? {
                 )
             )
         }
-        "charAt/${charAt_sig.hashCode()}" -> {
+        "charAt/${charAt_sig.hashCode()}", "charAt/${cs_charAt_sig.hashCode()}" -> {
             val s = args[0]
             val index = args[1]
             SList(
