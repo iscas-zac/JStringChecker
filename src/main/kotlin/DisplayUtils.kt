@@ -105,17 +105,18 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 }-to-${
                     inlineArrayName(typeToCoerce as Type)
                 }"
-                functions.putIfAbsent(
-                    castFuncName,
-                    (listOf(valueToBeCoerced.type)) to typeToCoerce
-                )
-                if (valueToBeCoerced.type !is NullType)
+                if (valueToBeCoerced.type !is NullType) {
+                    functions.putIfAbsent(
+                        castFuncName,
+                        (listOf(valueToBeCoerced.type)) to typeToCoerce
+                    )
                     return "($castFuncName ${transformValue(valueToBeCoerced)})"
+                }
                 // else go to below
             }
             if (valueToBeCoerced.type is NullType) { // default to cast the null's
                 val ty = typeClasses.first { it !is NullType }
-                val nullName = "null-${transformName(ty).replace("[( )]".toRegex(), "__")}"
+                val nullName = "null-${inlineArrayName(ty as Type)}"
                 // TODO: make sure null not equal to any concrete instance
                 placeholderDeclarations[nullName] = ty
                 return nullName
@@ -319,7 +320,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     .replace("\\\r", "\\u000d")
                     .replace("\\\'", "\\u0027")
                 is NegExpr -> "(- ${transformValue(value.op)})"
-                is BinopExpr -> when (value.symbol to listOf(value.op1.type, value.op2.type).any { it is FloatType || it is DoubleType }) {
+                is BinopExpr -> when (value.symbol to listOf(value.op1.type, value.op2.type).any { it is FloatType || it is DoubleType }) { // TODO: support exponent representation like -1.7976931348623157E308 or Inf
                     " != " to false -> { // false means that it is not a float operator
                         val types = listOf(value.op1.type, value.op2.type)
                         // compromise to bytecode's comparison of integers to booleans
@@ -438,16 +439,19 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
 
                 is Local -> transformName(value)
                 is CastExpr -> {
-                    val castFuncName = "cast-from-${
-                        inlineArrayName(value.op.type)
-                    }-to-${
-                        inlineArrayName(value.castType)
-                    }"
-                    functions.putIfAbsent(
-                        castFuncName,
-                        (listOf(value.op.type)) to value.castType
-                    )
-                    "($castFuncName ${transformValue(value.op)})"
+                    if (value.op.type is NullType) "null-${inlineArrayName(value.castType)}"
+                    else {
+                        val castFuncName = "cast-from-${
+                            inlineArrayName(value.op.type)
+                        }-to-${
+                            inlineArrayName(value.castType)
+                        }"
+                        functions.putIfAbsent(
+                            castFuncName,
+                            (listOf(value.op.type)) to value.castType
+                        )
+                        "($castFuncName ${transformValue(value.op)})"
+                    }
                 }
 
                 is ArrayRef -> {
