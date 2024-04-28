@@ -44,9 +44,12 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             when (derefName) {
                 // TODO: temporarily use int for computer int and byte type
                 is IntType, is LongType, is ByteType, is CharType, is ShortType -> return "Int"
+                Scene.v().getSootClass("java.lang.Integer"), Scene.v().getSootClass("java.lang.BigInteger"),
+                Scene.v().getSootClass("java.lang.BigDecimal"), Scene.v().getSootClass("java.lang.Short"),
+                Scene.v().getSootClass("java.lang.Byte"), Scene.v().getSootClass("java.lang.Long") -> return "Int"
                 is VoidType -> return "void"
-                is FloatType -> return "Float32"
-                is DoubleType -> return "Float64"
+                Scene.v().getSootClass("java.lang.Float"), is FloatType -> return "Float32"
+                Scene.v().getSootClass("java.lang.Double"), is DoubleType -> return "Float64"
                 Scene.v().getSootClass("java.lang.Class"), Scene.v().getSootClass("java.lang.reflect.Type") -> return "ClassObject"
                 Scene.v().getSootClass("java.lang.String") -> return "String"
                 Scene.v().getSootClass("java.lang.CharSequence") -> return "String"
