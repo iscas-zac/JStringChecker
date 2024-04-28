@@ -29,7 +29,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
          * global configurations of an SMT file, namely special assertions or sort declarations for now
          */
         var header = "(declare-sort void 0)\n(declare-sort Iterator 0)\n(declare-sort ClassObject 0)\n" // TODO: temporarily use a customized void type
-        val classObjects: MutableSet<ClassConstant> = mutableSetOf()
+        val classObjects: MutableSet<String> = mutableSetOf()
         /**
          * pre-condition and post-condition of a statement, for example, `(assert (not (= this null)))` for some
          * statement `this.someMethod()` as a pre-condition
@@ -303,8 +303,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 is FloatConstant -> "((_ to_fp 8 24) roundNearestTiesToEven ${value.value})"
                 is DoubleConstant -> "((_ to_fp 11 53) roundNearestTiesToEven ${value.value})"
                 is ClassConstant -> {
-                    this.classObjects.add(value)
                     val className = transformName(value.toSootType())
+                    this.classObjects.add(className)
                     "$className!class"
                 }
                 is StringConstant -> value.toString() // escape string
@@ -608,7 +608,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 "(set-option :produce-proofs true) ; enable proof generation\n" + "(set-logic ALL)\n" +
                 publicSymbols.keys.filter { publicSymbols[it] is Type || publicSymbols[it] is SootClass }
                     .joinToString("") { "(declare-sort $it 0)\n" } + bundle.header +
-                bundle.classObjects.joinToString("") { "(declare-const ${bundle.transformName(it.toSootType())}!class ClassObject)\n" } +
+                bundle.classObjects.joinToString("") { "(declare-const $it!class ClassObject)\n" } +
                 header
     val trailer =
         "\n(check-sat)\n(get-model)\n(get-unsat-core)\n; " + functions.toString() + "\n; " + publicSymbols.toString() + "\n; " + reversePublicSymbols.toString()
