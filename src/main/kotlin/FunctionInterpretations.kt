@@ -66,7 +66,7 @@ const val charAt_sig = "<java.lang.String: char charAt(int)>"
 //<java.lang.String: byte[] getBytes(java.lang.String)>
 //<java.lang.String: byte[] getBytes(java.nio.charset.Charset)>
 //<java.lang.String: byte[] getBytes()>
-//<java.lang.String: boolean equals(java.lang.Object)>
+const val str_equals_sig = "<java.lang.String: boolean equals(java.lang.Object)>"
 //<java.lang.String: boolean contentEquals(java.lang.StringBuffer)>
 //<java.lang.String: boolean nonSyncContentEquals(java.lang.AbstractStringBuilder)>
 //<java.lang.String: boolean contentEquals(java.lang.CharSequence)>
@@ -97,20 +97,20 @@ const val substring1_sig = "<java.lang.String: java.lang.String substring(int)>"
 const val substring2_sig = "<java.lang.String: java.lang.String substring(int,int)>"
 //<java.lang.String: java.lang.CharSequence subSequence(int,int)>
 const val concat_sig = "<java.lang.String: java.lang.String concat(java.lang.String)>"
-//<java.lang.String: java.lang.String replace(char,char)>
+const val replace_sig = "<java.lang.String: java.lang.String replace(char,char)>"
 //<java.lang.String: boolean matches(java.lang.String)>
 const val contains_sig = "<java.lang.String: boolean contains(java.lang.CharSequence)>"
 //<java.lang.String: java.lang.String replaceFirst(java.lang.String,java.lang.String)>
 //<java.lang.String: java.lang.String replaceAll(java.lang.String,java.lang.String)>
-//<java.lang.String: java.lang.String replace(java.lang.CharSequence,java.lang.CharSequence)>
+const val replace_cs_sig = "<java.lang.String: java.lang.String replace(java.lang.CharSequence,java.lang.CharSequence)>"
 //<java.lang.String: java.lang.String[] split(java.lang.String,int)>
 //<java.lang.String: java.lang.String[] split(java.lang.String)>
 //<java.lang.String: java.lang.String join(java.lang.CharSequence,java.lang.CharSequence[])>
 //<java.lang.String: java.lang.String join(java.lang.CharSequence,java.lang.Iterable)>
 //<java.lang.String: java.lang.String toLowerCase(java.util.Locale)>
-//<java.lang.String: java.lang.String toLowerCase()>
+const val toLowerCase_sig = "<java.lang.String: java.lang.String toLowerCase()>"
 //<java.lang.String: java.lang.String toUpperCase(java.util.Locale)>
-//<java.lang.String: java.lang.String toUpperCase()>
+const val toUpperCase_sig = "<java.lang.String: java.lang.String toUpperCase()>"
 const val trim_sig = "<java.lang.String: java.lang.String trim()>"
 //<java.lang.String: java.lang.String toString()>
 //<java.lang.String: char[] toCharArray()>
@@ -123,7 +123,7 @@ const val trim_sig = "<java.lang.String: java.lang.String trim()>"
 //<java.lang.String: java.lang.String copyValueOf(char[])>
 //<java.lang.String: java.lang.String valueOf(boolean)>
 //<java.lang.String: java.lang.String valueOf(char)>
-//<java.lang.String: java.lang.String valueOf(int)>
+const val str_valueOf_sig = "<java.lang.String: java.lang.String valueOf(int)>"
 //<java.lang.String: java.lang.String valueOf(long)>
 //<java.lang.String: java.lang.String valueOf(float)>
 //<java.lang.String: java.lang.String valueOf(double)>
@@ -162,7 +162,7 @@ const val trim_sig = "<java.lang.String: java.lang.String trim()>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(char[],int,int)>"
 //const val indexOf_sig = "<java.lang.StringBuffer: int indexOf(java.lang.String)>"
 //const val indexOf_sig = "<java.lang.StringBuffer: int indexOf(java.lang.String,int)>"
-//const val length_sig = "<java.lang.StringBuffer: int length()>"
+const val sbu_length_sig = "<java.lang.StringBuffer: int length()>"
 //const val charAt_sig = "<java.lang.StringBuffer: char charAt(int)>"
 //const val codePointAt_sig = "<java.lang.StringBuffer: int codePointAt(int)>"
 //const val codePointBefore_sig = "<java.lang.StringBuffer: int codePointBefore(int)>"
@@ -226,6 +226,7 @@ const val trim_sig = "<java.lang.String: java.lang.String trim()>"
 
 
 const val sb_init_sig = "<java.lang.StringBuilder: void <init>(java.lang.String)>"
+const val sb_blank_init_sig = "<java.lang.StringBuilder: void <init>()>"
 const val sb_toString_sig = "<java.lang.StringBuilder: java.lang.String toString()>"
 //const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(long)>"
 //const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(int)>"
@@ -243,22 +244,22 @@ const val sb_toString_sig = "<java.lang.StringBuilder: java.lang.String toString
 //const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(char[])>"
 //const val append_sig = "<java.lang.StringBuilder: java.lang.Appendable append(java.lang.CharSequence,int,int)>"
 //const val append_sig = "<java.lang.StringBuilder: java.lang.AbstractStringBuilder append(java.lang.CharSequence)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(boolean)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.CharSequence)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(char)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(int)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.StringBuffer)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(char[])>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.CharSequence,int,int)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(double)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(char[],int,int)>"
+const val sb_bool_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(boolean)>"
+const val sb_cs_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.CharSequence)>"
+const val sb_char_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(char)>"
+const val sb_int_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(int)>"
+const val sb_sb_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.StringBuffer)>"
+const val sb_arr_char_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(char[])>"
+const val sb_csii_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.CharSequence,int,int)>"
+const val sb_double_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(double)>"
+const val sb_cii_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(char[],int,int)>"
 const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.Object)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(long)>"
-//const val append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(float)>"
+const val sb_ob_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.Object)>"
+const val sb_long_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(long)>"
+const val sb_float_append_sig = "<java.lang.StringBuilder: java.lang.StringBuilder append(float)>"
 //const val indexOf_sig = "<java.lang.StringBuilder: int indexOf(java.lang.String,int)>"
 //const val indexOf_sig = "<java.lang.StringBuilder: int indexOf(java.lang.String)>"
-//const val length_sig = "<java.lang.StringBuilder: int length()>"
+const val sb_length_sig = "<java.lang.StringBuilder: int length()>"
 //const val charAt_sig = "<java.lang.StringBuilder: char charAt(int)>"
 //const val codePointAt_sig = "<java.lang.StringBuilder: int codePointAt(int)>"
 //const val codePointBefore_sig = "<java.lang.StringBuilder: int codePointBefore(int)>"
@@ -679,6 +680,94 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
                 "subs"
             )
         )
+
+        funcs["valueOf/${str_valueOf_sig.hashCode()}"] = SList(
+            "define-fun",
+            "valueOf/${str_valueOf_sig.hashCode()}",
+            SList(
+                SList("digits", "Int")
+            ),
+            "String",
+            SList(
+                "str.from_int",
+                "digits"
+            )
+        )
+
+        funcs["replace/${replace_sig.hashCode()}"] = SList(
+            "define-fun",
+            "replace/${replace_sig.hashCode()}",
+            SList(
+                SList("s", "String"),
+                SList("old_char", "Int"),
+                SList("new_char", "Int")
+            ),
+            "String",
+            SList(
+                "str.replace_all",
+                "s",
+                SList(
+                    "str.from_code",
+                    "old_char"
+                ),
+                SList(
+                    "str.from_code",
+                    "new_char"
+                )
+            )
+        )
+
+        funcs["replace/${replace_cs_sig.hashCode()}"] = SList(
+            "define-fun",
+            "replace/${replace_cs_sig.hashCode()}",
+            SList(
+                SList("s", "String"),
+                SList("old", "String"),
+                SList("new", "String")
+            ),
+            "String",
+            SList(
+                "str.replace_all",
+                "s",
+                "old",
+                "new"
+            )
+        )
+
+        funcs["toLowerCase/${toLowerCase_sig.hashCode()}"] = SList(
+            "define-fun",
+            "toLowerCase/${toLowerCase_sig.hashCode()}",
+            SList(
+                SList("s", "String")
+            ),
+            "String",
+            ('a'..'z').fold(Atom("s") as SExpression) { acc, char ->
+                SList(
+                    "str.replace_all",
+                    acc,
+                    "\"${char.uppercaseChar()}\"",
+                    "\"$char\""
+                )
+            }
+        )
+
+        funcs["toUpperCase/${toUpperCase_sig.hashCode()}"] = SList(
+            "define-fun",
+            "toUpperCase/${toUpperCase_sig.hashCode()}",
+            SList(
+                SList("s", "String")
+            ),
+            "String",
+            ('a'..'z').fold(Atom("s") as SExpression) { acc, char ->
+                SList(
+                    "str.replace_all",
+                    acc,
+                    "\"$char\"",
+                    "\"${char.uppercaseChar()}\""
+                )
+            }
+        )
+
         funcs["concat/${concat_sig.hashCode()}"] = SList(
             "define-fun",
             "concat/${concat_sig.hashCode()}",
@@ -892,6 +981,14 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
             )
         )
 
+        funcs["String-init"] = SList(
+            "define-fun",
+            "String-init",
+            SList(),
+            "String",
+            "\"\""
+        )
+
         funcs["<init>/${sb_init_sig.hashCode()}"] = SList(
             "define-fun",
             "<init>/${sb_init_sig.hashCode()}",
@@ -900,6 +997,14 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
             ),
             "String",
             "s"
+        )
+
+        funcs["<init>/${sb_blank_init_sig.hashCode()}"] = SList(
+            "define-fun",
+            "<init>/${sb_blank_init_sig.hashCode()}",
+            SList(),
+            "String",
+            "\"\""
         )
 
         funcs["append/${append_sig.hashCode()}"] = SList(
@@ -914,6 +1019,24 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
                 "str.++",
                 "s",
                 "tail"
+            )
+        )
+
+        funcs["append/${sb_int_append_sig.hashCode()}"] = SList( // TODO: this and `str_int_valueOf` need some fix if the digits is negative
+            "define-fun",
+            "append/${sb_int_append_sig.hashCode()}",
+            SList(
+                SList("s", "String"),
+                SList("tail", "Int")
+            ),
+            "String",
+            SList(
+                "str.++",
+                "s",
+                SList(
+                    "str.from_int",
+                    "tail"
+                )
             )
         )
 
@@ -1006,6 +1129,34 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
 //            SList("str.codepoints", "s")
 //        )
 
+        funcs["readLine/${readLine_sig.hashCode()}"] // intentionally left blank, TODO: need some special mark for the behavior
+
+        return funcs
+    }
+
+    fun listOfOtherApis(): Map<String, SExpression> {
+        val funcs = mutableMapOf<String, SExpression>()
+
+        funcs["Int_valueOf/${int_valueOf_sig.hashCode()}"] = SList(
+            "define-fun",
+            "Int_valueOf/${int_valueOf_sig.hashCode()}",
+            SList(
+                SList("i", "Int")
+            ),
+            "Int",
+            "i"
+        )
+
+        funcs["intValue/${int_intValue_sig.hashCode()}"] = SList(
+            "define-fun",
+            "intValue/${int_intValue_sig.hashCode()}",
+            SList(
+                SList("i", "Int")
+            ),
+            "Int",
+            "i"
+        )
+
         return funcs
     }
 
@@ -1027,7 +1178,7 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
         return null
     }
 
-    val funcs = listOfStringApis()
+    val funcs = listOfStringApis() + listOfOtherApis()
     // only the used functions of above (as well as their helpers) are included
     return functions.map { (name, types) ->
         funcs[name] ?: trivialCasts(name, types) ?: SList(
@@ -1162,7 +1313,6 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
         "<init>/${sb_init_sig.hashCode()}" -> {
             val sbObject = args[0]
             val initializer = args[1]
-            val oldName = getName(sbObject)
             TopLevel(
                 Atom(addReDeclarationOf(sbObject)),
                 SList(
@@ -1171,6 +1321,21 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
                         "=",
                         sbObject,
                         initializer
+                    )
+                )
+            )
+        }
+
+        "<init>/${sb_blank_init_sig.hashCode()}" -> {
+            val sbObject = args[0]
+            TopLevel(
+                Atom(addReDeclarationOf(sbObject)),
+                SList(
+                    "assert",
+                    SList(
+                        "=",
+                        sbObject,
+                        "\"\""
                     )
                 )
             )
@@ -1194,6 +1359,41 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
                         )
                     )
                 )
+            )
+        }
+
+        "append/${sb_ob_append_sig.hashCode()}",
+        "append/${sb_bool_append_sig.hashCode()}",
+        "append/${sb_cs_append_sig.hashCode()}",
+        "append/${sb_int_append_sig.hashCode()}",
+        "append/${sb_sb_append_sig.hashCode()}",
+        "append/${sb_arr_char_append_sig.hashCode()}",
+        "append/${sb_csii_append_sig.hashCode()}",
+        "append/${sb_double_append_sig.hashCode()}",
+        "append/${sb_cii_append_sig.hashCode()}",
+        "append/${sb_long_append_sig.hashCode()}",
+        "append/${sb_float_append_sig.hashCode()}",
+        "append/${sb_char_append_sig.hashCode()}",
+        -> { // TODO: for now no object toString info, these are not comprehensive now
+            val sbObject = args[0]
+            val oldName = getName(sbObject)
+            TopLevel(
+                Atom(addReDeclarationOf(sbObject)),
+                SList(
+                    "assert",
+                    SList(
+                        "str.prefixof",
+                        oldName,
+                        sbObject
+                    )
+                )
+            )
+        }
+
+        "readLine/${readLine_sig.hashCode()}" -> {
+            val sbObject = args[0]
+            TopLevel(
+                Atom(addReDeclarationOf(sbObject)) // TODO: add location for `mark` and `reset` related stuff
             )
         }
 
