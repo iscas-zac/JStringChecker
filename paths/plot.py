@@ -10,9 +10,11 @@ statistics = json.loads(open(directoryPath).read())
 # for s in suspicious:
 #     print(s["filename"])
 
-x = [dot['run_time'] for dot in statistics]
-y = [int(dot['is_sat'] == 'unsat') for dot in statistics]
-colors = ['green' if dot['is_sat'] == 'sat' else 'red' if dot['is_sat'] == 'unsat' else 'black' for dot in statistics]
+num = list(range(len(statistics)))
+zruntime = [dot['z3_run_time'] for dot in statistics]
+cruntime = [dot['cvc5_run_time'] for dot in statistics]
+zcolors = ['blue' if (dot['z3_is_sat'] == 'sat') else 'purple' if (dot['z3_is_sat'] == 'unsat') else 'grey' for dot in statistics]
+ccolors = ['green' if (dot['cvc5_is_sat'] == 'sat') else 'red' if (dot['cvc5_is_sat'] == 'unsat') else 'black' for dot in statistics]
 
 # i = 0
 # def get_EUF_count(filename):
@@ -22,15 +24,21 @@ colors = ['green' if dot['is_sat'] == 'sat' else 'red' if dot['is_sat'] == 'unsa
 #     with open(filename, 'r') as f:
 #         return f.read().count("declare-fun")
 # z = [get_EUF_count(dot['filename']) for dot in statistics]
-z = [dot['euf_count'] for dot in statistics]
+z = [dot['undefined_function_count'] for dot in statistics]
 
-print(sum(x) / len(x))
+print(f"z3: {sum(zruntime) / len(zruntime)}")
+print(f"cvc5: {sum(cruntime) / len(cruntime)}")
+# print([dot["filename"] for dot in statistics if 'deviant' in dot["filename"] and dot["z3_is_sat"] == 'sat'][:10])
+
+print("cvc5 / z3 diff:")
+print([f"z3 result: {dot['z3_is_sat']}, cvc5 result: {dot['cvc5_is_sat']}" for dot in statistics if dot['cvc5_is_sat'] != dot['z3_is_sat']])
 
 # Plotting the dots
-plt.scatter(x, z, c=colors)
+plt.scatter(num, cruntime, c=ccolors)
+plt.scatter(num, zruntime, c=zcolors)
 # plt.xscale('linear')
 # plt.xlim(0, 10)
-plt.xlabel('z3 solve time (seconds)')
-plt.ylabel('undefined function count')
+plt.xlabel('file number')
+plt.ylabel('solve time (seconds)')
 plt.title('Dots Plot')
 plt.show()
