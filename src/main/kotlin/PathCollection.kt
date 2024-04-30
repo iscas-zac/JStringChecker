@@ -22,6 +22,25 @@ fun <T> Set<List<T>>.getItemsAppearingInEachPathsNoMoreThan(items: Set<T>, times
     }
 }
 
+fun pathYielder(cfg: BlockGraph): Sequence<Set<List<Block>>> {
+    var growingPaths = listWrapper(cfg.heads.toSet())
+    var items = cfg.heads.toSet()
+    return generateSequence {
+        if (items.all { cfg.tails.contains(it) }) null
+        else {
+            items = growingPaths.getItemsAppearingInEachPathsNoMoreThan(growingPaths.mapNotNull { it.firstOrNull() }
+                .toSet(), 2).toSet()
+            growingPaths =
+                growingPaths.map { p ->
+                    items.map { block ->
+                        if (block == p.firstOrNull()) cfg.getSuccsOf(block).map { listOf(it) + p } else listOf()
+                    }.flatten()
+                }.flatten().toSet()
+            growingPaths.filter { cfg.tails.contains(it.first()) }.toSet()
+        }
+    }
+}
+
 fun constructPath(cfg: BlockGraph): Set<List<Block>> {
     var items = cfg.heads.toSet()
     if (items.isEmpty()) return emptySet()
@@ -57,7 +76,7 @@ class Slicer(val programPath: List<Block>) {
             .map { it.value }
     }
 
-    public fun isStringRelated() = stmts.filterIsInstance<DefinitionStmt>()
+    fun isStringRelated() = stmts.filterIsInstance<DefinitionStmt>()
         .any { it.leftOp.type == RefType.v("java.lang.String") }
 
     fun getPathConstraints(): List<Condition> {
@@ -120,7 +139,7 @@ class Slicer(val programPath: List<Block>) {
             else null
         }.filter {
             it.name.contains("toString") ||
-                    it.signature.contains("java.lang.String") ||
+                    it.declaringClass.name.contains("java.lang.String") ||
                     it.signature.contains("CharSequence")
         }.groupBy { it }
             .mapValues { it.value.count() }
