@@ -133,6 +133,14 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 paramTypes: List<Numberable>,
                 retType: Type
             ): String {
+                // TODO: for now use a special handle for `<java.lang.String: boolean equals(java.lang.Object)>`
+                if (funcName.contains("<java.lang.String: boolean equals(java.lang.Object)>".hashCode().toString()))
+                    if (transformName(args[1].type) == "String") {
+                        val arg1 = transformValue(args[0])
+                        val arg2 = transformValue(args[1])
+                        return "(= $arg1 $arg2)"
+                    } else return "false"
+
                 functions.putIfAbsent(
                     funcName,
                     paramTypes to retType
