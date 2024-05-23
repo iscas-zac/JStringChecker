@@ -3,6 +3,7 @@ import soot.jimple.*
 import soot.util.Numberable
 import kotlin.math.floor
 
+@OptIn(ExperimentalStdlibApi::class)
 fun Slicer.smtExpand(): Pair<String, List<String>> {
     // the symbol that are defined and referred in the bytecode, should change to SSA form
     val publicSymbols = mutableMapOf<String, Any>()
@@ -59,7 +60,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
 //                Scene.v().getSootClass("java.util.List") -> return ""
 //                ArrayType.v(CharType.v(), 1) -> return "(Array Int Int)" // TODO: remove these 2 lines and add multi-array support
 //                ArrayType.v(RefType.v("java.lang.String"), 1) -> return "(Array Int String)"
-                is ArrayType -> if (derefName.numDimensions == 1) return "(Array Int ${transformName(derefName.baseType)})"
+//                is ArrayType -> if (derefName.numDimensions == 1) return "(Array Int ${transformName(derefName.baseType)})"
+                is ArrayType -> return "(Array Int ".repeat(derefName.numDimensions) + transformName(derefName.baseType) + ")".repeat(derefName.numDimensions)
                 is BooleanType -> return "Bool"
             }
             val sym = reversePublicSymbols[derefName]
@@ -312,10 +314,14 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 is LongConstant -> {
                     value.value.toString()
                 }
-                is FloatConstant -> "((_ to_fp 8 24) roundNearestTiesToEven ${value.value})"
-                is DoubleConstant -> "((_ to_fp 11 53) roundNearestTiesToEven ${value.value})"
+                is FloatConstant -> {
+                    "((_ to_fp 8 24) #x${value.value.toRawBits().toHexString()})"
+                }
+                is DoubleConstant -> {
+                    "((_ to_fp 11 53) #x${value.value.toRawBits().toHexString()})"
+                }
                 is ClassConstant -> {
-                    val className = transformName(value.toSootType())
+                    val className = inlineArrayName(value.toSootType())
                     this.classObjects.add(className)
                     "$className!class"
                 }
@@ -327,17 +333,22 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     .replace("\\\n", "\\u000a")
                     .replace("\\\r", "\\u000d")
                     .replace("\\\'", "\\u0027")
-                is NegExpr -> "(- ${transformValue(value.op)})"
+                is NegExpr -> {
+                    val v = value.op
+                    if (v is FloatType || v is DoubleType)
+                        "(fp.neg ${transformValue(v)})"
+                    else "(- ${transformValue(v)})"
+                }
                 is BinopExpr -> when (value.symbol to listOf(value.op1.type, value.op2.type).any { it is FloatType || it is DoubleType }) { // TODO: support exponent representation like -1.7976931348623157E308 or Inf
                     " != " to false -> { // false means that it is not a float operator
                         val types = listOf(value.op1.type, value.op2.type)
                         // compromise to bytecode's comparison of integers to booleans
-                        "(not (= ${coerce(value.op1, types)} ${coerce(value.op2, types)}))"
+                        "(not (= ${coerce(value.op1, types, true)} ${coerce(value.op2, types, true)}))"
                     }
 
                     " == " to false -> {
                         val types = listOf(value.op1.type, value.op2.type)
-                        "(= ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                        "(= ${coerce(value.op1, types, true)} ${coerce(value.op2, types, true)})"
                     }
 
                     " != " to true -> {
@@ -384,18 +395,24 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     " && " to false, " || " to false -> { throw RuntimeException("not handled") }
 
                     " & " to false -> {
-                        val types = listOf(value.op1.type, value.op2.type)
-                        "(bv2nat (bvand ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
+                        val types = mutableListOf(IntType.v())
+                        val v1 = if (value.op1.type is BooleanType) "(ite ${transformValue(value.op1)} 1 0)" else coerce(value.op1, types)
+                        val v2 = if (value.op2.type is BooleanType) "(ite ${transformValue(value.op2)} 1 0)" else coerce(value.op2, types)
+                        "(bv2nat (bvand ((_ int2bv 64) $v1) ((_ int2bv 64) $v2)))"
                     } // add ite to cast to int, be compatible with the bytecode behavior
 
                     " | " to false -> {
-                        val types = listOf(value.op1.type, value.op2.type)
-                        "(bv2nat (bvor ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
+                        val types = mutableListOf(IntType.v())
+                        val v1 = if (value.op1.type is BooleanType) "(ite ${transformValue(value.op1)} 1 0)" else coerce(value.op1, types)
+                        val v2 = if (value.op2.type is BooleanType) "(ite ${transformValue(value.op2)} 1 0)" else coerce(value.op2, types)
+                        "(bv2nat (bvor ((_ int2bv 64) $v1) ((_ int2bv 64) $v2)))"
                     }
 
                     " ^ " to false -> {
-                        val types = listOf(value.op1.type, value.op2.type)
-                        "(bv2nat (bvxor ((_ int2bv 64) ${coerce(value.op1, types)}) ((_ int2bv 64) ${coerce(value.op2, types)})))"
+                        val types = mutableListOf(IntType.v())
+                        val v1 = if (value.op1.type is BooleanType) "(ite ${transformValue(value.op1)} 1 0)" else coerce(value.op1, types)
+                        val v2 = if (value.op2.type is BooleanType) "(ite ${transformValue(value.op2)} 1 0)" else coerce(value.op2, types)
+                        "(bv2nat (bvxor ((_ int2bv 64) $v1) ((_ int2bv 64) $v2)))"
                     }
 
                     " >> " to false, " >>> " to false -> {
