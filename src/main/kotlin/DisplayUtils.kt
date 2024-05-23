@@ -335,7 +335,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     .replace("\\\'", "\\u0027")
                 is NegExpr -> {
                     val v = value.op
-                    if (v is FloatType || v is DoubleType)
+                    if (v.type is FloatType || v.type is DoubleType)
                         "(fp.neg ${transformValue(v)})"
                     else "(- ${transformValue(v)})"
                 }
