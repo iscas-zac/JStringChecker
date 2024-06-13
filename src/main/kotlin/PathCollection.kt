@@ -62,7 +62,7 @@ fun constructPath(cfg: BlockGraph): Set<List<Block>> {
 }
 
 class Slicer(val programPath: List<Block>) {
-    private val stmts = programPath.asReversed().map { it.toList() }.flatten()
+    val stmts = programPath.asReversed().map { it.toList() }.flatten()
     private var constraintChain: List<Condition>? = null
 
     private fun getStringRelatedVars(): List<Value> {
