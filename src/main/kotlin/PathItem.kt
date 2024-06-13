@@ -1,3 +1,4 @@
+import soot.Type
 import soot.Value
 import soot.jimple.Stmt
 
@@ -13,6 +14,17 @@ class Statement(val stmt: Stmt, private val debugInfo: String = ""): PathItem {
 sealed interface Condition: PathItem {
     fun getValues(): List<Value>
 }
+
+sealed interface SideEffect: Condition
+
+class ExceptionalBreak(val exceptionType: Type, private val debugInfo: String = ""): SideEffect {
+    override fun getValues() = emptyList<Value>()
+
+    override fun toString(): String {
+        return "Handling Exception: $exceptionType $debugInfo"
+    }
+}
+
 class Single(val value: Value, private val debugInfo: String = ""): Condition {
     override fun toString(): String {
         return "Cond: $value $debugInfo"

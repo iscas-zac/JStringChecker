@@ -1401,8 +1401,8 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
     }
 }
 
-fun isNotSameTypeButCastable(subType: Type, topType: Type, strict: Boolean = false): Boolean =
-    (subType is RefType && topType is RefType && subType.merge(topType, Scene.v()) != subType) || // true subtype
+fun isNotParentTypeOf(subType: Type, topType: Type, strict: Boolean = false): Boolean =
+    (subType is RefType && topType is RefType && subType.merge(topType, Scene.v()) != subType) || // not parent type
             (topType == RefType.v("java.lang.String") && !strict) || // xxx.toString() method
             (topType is ArrayType && subType is ArrayType && isNotParentTypeOf(subType.elementType, topType.elementType)) || // array of subtype
             (subType is ArrayType && topType == RefType.v("java.lang.Object")) || // arrays are sub of Object

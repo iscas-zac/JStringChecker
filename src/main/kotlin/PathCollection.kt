@@ -117,6 +117,9 @@ class Slicer(val programPath: List<Block>) {
                         if (res.isEmpty()) Nop()
                         else res.fold(Nop()) { acc: Condition, condition -> Intersect(condition, acc) }
                     }
+                    else if (next.head.let { it is IdentityStmt && it.rightOp is CaughtExceptionRef }) {
+                        ExceptionalBreak((next.head as IdentityStmt).rightOp.type)
+                    }
                     else Nop("DEBUG: $jumpStatement") // TODO: add an exception item
                 }
             }
@@ -140,11 +143,22 @@ class Slicer(val programPath: List<Block>) {
         }.filter {
             it.name.contains("toString") ||
                     it.declaringClass.name.contains("java.lang.String") ||
-                    it.signature.contains("CharSequence")
+                    it.declaringClass.name.contains("CharSequence")
         }.groupBy { it }
             .mapValues { it.value.count() }
     }
 
+    fun getApisInvokeOrder() = stmts.mapNotNull { unit ->
+        if ((unit as Stmt).containsInvokeExpr())
+            unit.invokeExpr.method
+        else null
+    }.filter {
+        it.name.contains("toString") ||
+                it.declaringClass.name.contains("java.lang.String") ||
+                it.declaringClass.name.contains("CharSequence")
+    }
+
+    // the pathItems related to every local variable
     private fun getApiChains(): List<List<PathItem>> {
         fun relatedWithVar(apiSeq: List<PathItem>, localVar: Value): Boolean {
             if (apiSeq.isEmpty()) return false

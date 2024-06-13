@@ -89,19 +89,23 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         }
 
         // produce a type cast for the value to the top of types
-        fun coerce(valueToBeCoerced: Value, types: List<Numberable>): String {
+        fun coerce(valueToBeCoerced: Value, types: List<Numberable>, upcastToCommonParent: Boolean = false): String {
             val typeClasses =
                 types.map { if (it is SootClass) RefType.v(it) else it }.filterNot { it == valueToBeCoerced.type }
 
             if (typeClasses.contains(BooleanType.v()) && valueToBeCoerced.type is IntType)
                 return "(ite (= 1 ${transformValue(valueToBeCoerced)}) true false)" // special downcast
+
             if (typeClasses.any { it is DoubleType } && valueToBeCoerced.type is IntType)
                 return "((_ to_fp 11 53) roundNearestTiesToEven (to_real ${transformValue(valueToBeCoerced)}))" // TODO: support complete floating point representation
             if (typeClasses.any { it is FloatType } && valueToBeCoerced.type is IntType)
                 return "((_ to_fp 8 24) roundNearestTiesToEven (to_real ${transformValue(valueToBeCoerced)}))"
-            if (typeClasses.size == 1 && isNotSameTypeButCastable(valueToBeCoerced.type, typeClasses[0] as Type)
+            assert (typeClasses.size == 1) { println("types are $typeClasses") }
+            if (typeClasses.size == 1 && isNotParentTypeOf(valueToBeCoerced.type, typeClasses[0] as Type)
             ) { // only upcast for now
-                val typeToCoerce = typeClasses[0]
+                val typeToCoerce = if (typeClasses[0] is RefType && valueToBeCoerced.type is RefType && upcastToCommonParent && isNotParentTypeOf(typeClasses[0] as Type, valueToBeCoerced.type))
+                    valueToBeCoerced.type.merge(typeClasses[0] as RefType, Scene.v())
+                else typeClasses[0]
                 val castFuncName = "cast-from-${
                     inlineArrayName(valueToBeCoerced.type) // deal with compound (array) type
                 }-to-${
@@ -154,7 +158,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             }
 
             return when (value) {
-                is NewExpr -> {
+                is NewExpr -> { // TODO: convey the pointer nature by alias analysis
                     val funcName = "${transformName(value.baseType)}-init" // placeholder value
                     functions.putIfAbsent(funcName, listOf<Any>() to value.baseType)
                     funcName
@@ -280,7 +284,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 }
 
                 is InstanceOfExpr -> {
-                    (value.op.type == value.checkType || isNotSameTypeButCastable(
+                    (value.op.type == value.checkType || isNotParentTypeOf(
                         value.op.type,
                         value.checkType,
                         true
@@ -602,6 +606,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         is Nop -> "true"
         is Single -> bundle.transformValue(condition.value)
         is Union -> "(or ${conditionExpander(condition.leftCond)} ${conditionExpander(condition.rightCond)})"
+        is SideEffect -> "true" // TODO: ignore the exceptions and side effects are for now just exceptions
     }
 
     // entry point
@@ -637,7 +642,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
     header =
                 "(set-option :produce-unsat-cores true) ; enable generation of unsat cores\n" +
                 "(set-option :produce-models true) ; enable model generation\n" +
-                "(set-option :produce-proofs true) ; enable proof generation\n" + "(set-logic ALL)\n" +
+                //"(set-option :produce-proofs true) ; enable proof generation\n" +
+                        "(set-logic ALL)\n" +
                 publicSymbols.keys.filter { publicSymbols[it] is Type || publicSymbols[it] is SootClass }
                     .joinToString("") { "(declare-sort $it 0)\n" } + bundle.header +
                 bundle.classObjects.joinToString("") { "(declare-const $it!class ClassObject)\n" } +
