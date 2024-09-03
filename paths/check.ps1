@@ -16,7 +16,7 @@ $cnt = 0
 foreach ($file in $smt2Files) {
     $measure = Measure-Command {
         # $errOut = & { $global:z3Output = z3 -smt2 $file.FullName } 2>&1
-        $z3Output = & z3 -smt2 $file.FullName
+        $z3Output = & z3 -smt2 $file.FullName -T:2
     }
     if ($errOut) {
         Write $errOut

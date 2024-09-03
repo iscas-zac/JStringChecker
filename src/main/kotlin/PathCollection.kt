@@ -120,7 +120,18 @@ class Slicer(val programPath: List<Block>) {
                     else if (next.head.let { it is IdentityStmt && it.rightOp is CaughtExceptionRef }) {
                         ExceptionalBreak((next.head as IdentityStmt).rightOp.type)
                     }
-                    else Nop("DEBUG: $jumpStatement") // TODO: add an exception item
+                    else if (prev.succs.size < 2) { Nop("DEBUG: probably a while/for enter statement $next")}
+                    else if (prev.succs.filter { it.indexInMethod != next.indexInMethod }
+                        .all { it.head.let { it is IdentityStmt && it.rightOp is CaughtExceptionRef }}) {
+                        Nop("DEBUG: other branches are all exception branch $jumpStatement")
+                    }
+                    else {
+                        println(prev.succs.filter { it.indexInMethod != next.indexInMethod })
+                        println(next)
+                        println("jump: " + jumpStatement)
+                        println("to: " + next.head)
+                        Nop("DEBUG: $jumpStatement")
+                    } // TODO: add an exception item
                 }
             }
         return constraintChain as List<Condition>
