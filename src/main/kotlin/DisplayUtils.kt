@@ -179,7 +179,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 }
 
                 is InstanceFieldRef -> {
-                    val className = value.field.declaringClass
+                    val className = value.field.declaringClass.type
                     val fieldName =
                         value.field.name + "/${className.hashCode()}" // TODO: check if inherited field works
                     registerFunctionAndUpcastArguments(
@@ -206,7 +206,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     // enforce eval order
                     val ret = registerFunctionAndUpcastArguments(
                         funcName, (listOf(value.base) + value.args),
-                        (listOf(value.method.declaringClass) + value.method.parameterTypes), value.method.returnType
+                        (listOf(value.method.declaringClass.type) + value.method.parameterTypes), value.method.returnType
                     )
 
                     post = postconditionOfFunctions(
@@ -237,7 +237,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     // enforce eval order by adding a temporary store
                     val ret = registerFunctionAndUpcastArguments(
                         funcName, (listOf(value.base) + value.args),
-                        (listOf(value.method.declaringClass) + value.method.parameterTypes), value.method.returnType
+                        (listOf(value.method.declaringClass.type) + value.method.parameterTypes), value.method.returnType
                     )
 
                     post = postconditionOfFunctions(
@@ -270,7 +270,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                         } ${
                             value.args.joinToString(
                                 " "
-                            ) { coerce(it, listOf(Scene.v().getSootClass("java.lang.String"))) }
+                            ) { coerce(it, listOf(Scene.v().getRefType("java.lang.String"))) }
                         })"
                     } else {
                         "(${value.method.name} ${

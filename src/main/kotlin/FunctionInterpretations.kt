@@ -1,4 +1,23 @@
+import net.amygdalum.regexparser.AlternativesNode
+import net.amygdalum.regexparser.AnyCharNode
+import net.amygdalum.regexparser.BoundedLoopNode
+import net.amygdalum.regexparser.CharClassNode
+import net.amygdalum.regexparser.CompClassNode
+import net.amygdalum.regexparser.ConcatNode
+import net.amygdalum.regexparser.GroupNode
+import net.amygdalum.regexparser.OptionalNode
+import net.amygdalum.regexparser.RangeCharNode
+import net.amygdalum.regexparser.RegexCompileException
+import net.amygdalum.regexparser.RegexNode
+import net.amygdalum.regexparser.RegexParser
+import net.amygdalum.regexparser.SingleCharNode
+import net.amygdalum.regexparser.SpecialCharClassNode
+import net.amygdalum.regexparser.StringNode
+import net.amygdalum.regexparser.UnboundedLoopNode
 import soot.*
+import soot.JastAddJ.StringLiteral
+import java.util.regex.Pattern
+import java.util.regex.PatternSyntaxException
 
 sealed interface SExpression {
     fun toStringWithTransformedName(t: (Any) -> String): String
@@ -104,7 +123,7 @@ const val contains_sig = "<java.lang.String: boolean contains(java.lang.CharSequ
 //<java.lang.String: java.lang.String replaceAll(java.lang.String,java.lang.String)>
 const val replace_cs_sig = "<java.lang.String: java.lang.String replace(java.lang.CharSequence,java.lang.CharSequence)>"
 //<java.lang.String: java.lang.String[] split(java.lang.String,int)>
-//<java.lang.String: java.lang.String[] split(java.lang.String)>
+const val split_sig = "<java.lang.String: java.lang.String[] split(java.lang.String)>"
 //<java.lang.String: java.lang.String join(java.lang.CharSequence,java.lang.CharSequence[])>
 //<java.lang.String: java.lang.String join(java.lang.CharSequence,java.lang.Iterable)>
 //<java.lang.String: java.lang.String toLowerCase(java.util.Locale)>
@@ -406,6 +425,80 @@ const val readLine_sig = "<java.lang.BufferedReader: java.lang.String readLine()
 //const val notifyAll_sig = "<java.lang.BufferedReader: void notifyAll()>"
 
 const val next_sig = "<java.util.Iterator: java.lang.Object next()>"
+
+val sig_table = listOf(length_sig, isEmpty_sig, charAt_sig, str_equals_sig, startsWith0_sig, startsWith_sig, endsWith_sig, indexOf1_sig, indexOf2_sig, indexOf3_sig, indexOf4_sig, indexOf5_sig, indexOf6_sig, substring1_sig, substring2_sig, concat_sig, replace_sig, contains_sig, replace_cs_sig, split_sig, toLowerCase_sig, toUpperCase_sig, trim_sig, str_valueOf_sig, sbu_length_sig, sb_init_sig, sb_blank_init_sig, sb_toString_sig, sb_bool_append_sig, sb_cs_append_sig, sb_char_append_sig, sb_int_append_sig, sb_sb_append_sig, sb_arr_char_append_sig, sb_csii_append_sig, sb_double_append_sig, sb_cii_append_sig, append_sig, sb_ob_append_sig, sb_long_append_sig, sb_float_append_sig, sb_length_sig, cs_toString_sig, cs_length_sig, cs_charAt_sig, cs_subSequence_sig, cs_chars_sig, cs_codePoints_sig, int_intValue_sig, int_valueOf_sig, readLine_sig)
+
+fun convertLiteralRegexToSmtlib(regex: String): SExpression {
+    val parser = RegexParser(regex) // TODO: some more cases when the parser is not enough
+    try {
+        val tree = parser.parse()
+
+        fun convertRec(node: RegexNode): SExpression {
+            return when (node) {
+                is StringNode -> Atom(node.value)
+                is SpecialCharClassNode -> SList("re.union", *node.toCharNodes().map { convertRec(it) }.toTypedArray())
+                is CharClassNode -> SList("re.union", *node.toCharNodes().map { convertRec(it) }.toTypedArray())
+                is AlternativesNode -> SList("re.union", *node.subNodes.map { convertRec(it) }.toTypedArray())
+                is SingleCharNode -> Atom(node.value.toString())
+                is RangeCharNode -> SList("re.range", node.from.toString(), node.to.toString())
+                is CompClassNode -> SList("re.comp", convertRec(node.invert(null)))
+                is AnyCharNode -> Atom("re.allchar")
+                is GroupNode -> convertRec(node.subNode)
+                is ConcatNode -> SList("re.++", node.subNodes.map { convertRec(it) }.toTypedArray())
+                is OptionalNode -> SList("re.opt", convertRec(node.subNode))
+                is UnboundedLoopNode -> {
+                    if (node.from == 0) SList("re.*", convertRec(node.subNode))
+                    else if (node.from == 1) SList("re.+", convertRec(node.subNode))
+                    else SList(
+                        "str.++",
+                        SList(SList("_", "re.^", node.from), convertRec(node.subNode)),
+                        SList("re.*", convertRec(node.subNode))
+                    )
+                }
+
+                is BoundedLoopNode -> SList(SList("_", "re.loop", node.from, node.to), convertRec(node.subNode))
+                else -> SList() // TODO: error
+            }
+        }
+
+        return convertRec(tree)
+    } catch (e: RegexCompileException) {
+        return SList() // TODO: error
+    }
+}
+fun partialSolutionForRegex(regex: String): SExpression {
+    // TODO: if able, use a regex processor from the library instead
+    fun localProcessor(s: String): SExpression {
+        var cursor = "(.*?)[^\\\\][.*?+^\\-]".toRegex()
+        return SList() // TODO
+    }
+    var res = "^(.*?)(?<!\\\\)([\\[(])(.*?)".toRegex().find(regex)
+    if (res != null) {
+        val (before, symbol, rem) = res.destructured
+        res = if (symbol == "[")
+            "^(.*?)(?<!\\\\)(])(.*?)".toRegex().find(rem)
+        else
+            "^(.*?)(?<!\\\\)(\\))(.*?)".toRegex().find(rem)
+        if (res == null) return Atom("***") // TODO: wrong case
+        val (mid, tail) = res.destructured
+        val content = if (symbol == "[") {
+            SList(
+                "re.union",
+                *mid.split("(?<!\\\\)|".toRegex())
+                    .map { localProcessor(it) }
+                    .toTypedArray()
+            )
+        } else localProcessor(mid)
+        return SList(
+            "re.++",
+            localProcessor(before),
+            content,
+            partialSolutionForRegex(tail)
+        )
+    } else return localProcessor(regex)
+}
+
+fun main() { print(convertLiteralRegexToSmtlib("[zbc.*?")) }
 
 fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): List<SExpression> {
 
@@ -1360,6 +1453,41 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
                     )
                 )
             )
+        }
+
+        "split/${split_sig.hashCode()}" -> {
+            val pattern = args[1]
+            if (pattern is StringLiteral) {
+                val regex = convertLiteralRegexToSmtlib(pattern.toString())
+                TopLevel( // TODO: a weak condition, asserting every item in the array contains no such regex
+                    SList("assert",
+                        SList(
+                            "forall",
+                            SList(SList("i", "Int")),
+                            SList(
+                                "not",
+                                SList(
+                                    "str.in_re",
+                                    SList(
+                                        "select",
+                                        SList(
+                                            funcName,
+                                            *args.toTypedArray()
+                                        ),
+                                        "i"
+                                    ),
+                                    SList(
+                                        "re.++",
+                                        "re.all",
+                                        regex,
+                                        "re.all"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            } else null
         }
 
         "append/${sb_ob_append_sig.hashCode()}",

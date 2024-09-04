@@ -8,5 +8,6 @@ repositories {
 
 
 dependencies {
-    implementation("org.soot-oss:soot:4.4.1")
+    implementation("org.soot-oss:soot:4.5.0")
+    implementation("net.amygdalum:regexparser:0.2.5")
 }
