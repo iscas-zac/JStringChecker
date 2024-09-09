@@ -101,9 +101,9 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             if (typeClasses.any { it is FloatType } && valueToBeCoerced.type is IntType)
                 return "((_ to_fp 8 24) roundNearestTiesToEven (to_real ${transformValue(valueToBeCoerced)}))"
             assert (typeClasses.size == 1) { println("types are $typeClasses") }
-            if (typeClasses.size == 1 && isNotParentTypeOf(valueToBeCoerced.type, typeClasses[0] as Type)
+            if (typeClasses.size == 1 && isNotParentTypeOfThusCanBeUpcastTo(valueToBeCoerced.type, typeClasses[0] as Type)
             ) { // only upcast for now
-                val typeToCoerce = if (typeClasses[0] is RefType && valueToBeCoerced.type is RefType && upcastToCommonParent && isNotParentTypeOf(typeClasses[0] as Type, valueToBeCoerced.type))
+                val typeToCoerce = if (typeClasses[0] is RefType && valueToBeCoerced.type is RefType && upcastToCommonParent && isNotParentTypeOfThusCanBeUpcastTo(typeClasses[0] as Type, valueToBeCoerced.type))
                     valueToBeCoerced.type.merge(typeClasses[0] as RefType, Scene.v())
                 else typeClasses[0]
                 val castFuncName = "cast-from-${
@@ -284,7 +284,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 }
 
                 is InstanceOfExpr -> {
-                    (value.op.type == value.checkType || isNotParentTypeOf(
+                    (value.op.type == value.checkType || isNotParentTypeOfThusCanBeUpcastTo(
                         value.op.type,
                         value.checkType,
                         true
@@ -389,6 +389,11 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     " / " to true -> {
                         val types = listOf(value.op1.type, value.op2.type)
                         "(fp.div roundNearestTiesToEven ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
+                    }
+
+                    " % " to true -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(fp.rem ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
                     }
 
                     " % " to false -> {

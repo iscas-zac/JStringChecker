@@ -91,7 +91,7 @@ const val str_equals_sig = "<java.lang.String: boolean equals(java.lang.Object)>
 //<java.lang.String: boolean contentEquals(java.lang.CharSequence)>
 const val equalsIgnoreCase_sig = "<java.lang.String: boolean equalsIgnoreCase(java.lang.String)>"
 const val compareTo_sig = "<java.lang.String: int compareTo(java.lang.String)>"
-const val compareToIgnoreCase = "<java.lang.String: int compareToIgnoreCase(java.lang.String)>"
+const val compareToIgnoreCase_sig = "<java.lang.String: int compareToIgnoreCase(java.lang.String)>"
 //<java.lang.String: boolean regionMatches(int,java.lang.String,int,int)>
 //<java.lang.String: boolean regionMatches(boolean,int,java.lang.String,int,int)>
 const val startsWith0_sig = "<java.lang.String: boolean startsWith(java.lang.String,int)>"
@@ -875,7 +875,7 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
                 SList("this", "String"),
                 SList("another", "String")
             ),
-            "String",
+            "Bool",
             SList(
                 "let",
                 SList(
@@ -1674,6 +1674,117 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
             } else null
         }
 
+        "compareTo/${compareTo_sig.hashCode()}" -> {
+            val thisStr = args[0]
+            val otherStr = args[1]
+            TopLevel(
+                SList(
+                    "assert",
+                    SList(
+                        "let",
+                        SList(
+                            SList(
+                                "this<other",
+                                SList(
+                                    "str.<",
+                                    thisStr,
+                                    otherStr
+                                )
+                            ),
+                            SList(
+                                "this<=other",
+                                SList(
+                                    "str.<=",
+                                    thisStr,
+                                    otherStr
+                                )
+                            ),
+                            SList(
+                                "compareRes",
+                                SList(
+                                    funcName,
+                                    *args.toTypedArray()
+                                )
+                            )
+                        ),
+                        SList(
+                            "or",
+                            SList("and", SList(">", "compareRes", "0"), SList("not", "this<=other")),
+                            SList("and", SList("<", "compareRes", "0"), "this<other"),
+                            SList("and", SList("=", "compareRes", "0"), SList("not", "this<other"), "this<=other")
+                        )
+                    )
+                )
+            )
+        }
+
+        "compareToIgnoreCase/${compareToIgnoreCase_sig.hashCode()}" -> {
+            val thisStrWithCase = args[0]
+            val otherStrWithCase = args[1]
+            val thisStr = "thisS"
+            val otherStr = "otherS"
+            TopLevel(
+                SList(
+                    "assert",
+                    SList(
+                        "let",
+                        SList(
+                            SList(thisStr, ('a'..'z').fold(Atom(thisStrWithCase) as SExpression) { acc, char ->
+                                SList(
+                                    "str.replace_all",
+                                    acc,
+                                    "\"$char\"",
+                                    "\"${char.uppercaseChar()}\""
+                                )
+                            }),
+                            SList(otherStr, ('a'..'z').fold(Atom(otherStrWithCase) as SExpression) { acc, char ->
+                                SList(
+                                    "str.replace_all",
+                                    acc,
+                                    "\"$char\"",
+                                    "\"${char.uppercaseChar()}\""
+                                )
+                            }),
+                        ),
+                        SList(
+                            "let",
+                            SList(
+                                SList(
+                                    "this<other",
+                                    SList(
+                                        "str.<",
+                                        thisStr,
+                                        otherStr
+                                    )
+                                ),
+                                SList(
+                                    "this<=other",
+                                    SList(
+                                        "str.<=",
+                                        thisStr,
+                                        otherStr
+                                    )
+                                ),
+                                SList(
+                                    "compareRes",
+                                    SList(
+                                        funcName,
+                                        *args.toTypedArray()
+                                    )
+                                )
+                            ),
+                            SList(
+                                "or",
+                                SList("and", SList(">", "compareRes", "0"), SList("not", "this<=other")),
+                                SList("and", SList("<", "compareRes", "0"), "this<other"),
+                                SList("and", SList("=", "compareRes", "0"), SList("not", "this<other"), "this<=other")
+                            )
+                        )
+                    )
+                )
+            )
+        }
+
         "append/${sb_ob_append_sig.hashCode()}",
         "append/${sb_bool_append_sig.hashCode()}",
         "append/${sb_int_append_sig.hashCode()}",
@@ -1714,9 +1825,10 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
     }
 }
 
-fun isNotParentTypeOf(subType: Type, topType: Type, strict: Boolean = false): Boolean =
+fun isNotParentTypeOfThusCanBeUpcastTo(subType: Type, topType: Type, strict: Boolean = false): Boolean =
     (subType is RefType && topType is RefType && subType.merge(topType, Scene.v()) != subType) || // not parent type
             (topType == RefType.v("java.lang.String") && !strict) || // xxx.toString() method
-            (topType is ArrayType && subType is ArrayType && isNotParentTypeOf(subType.elementType, topType.elementType)) || // array of subtype
+            (topType is ArrayType && subType is ArrayType && isNotParentTypeOfThusCanBeUpcastTo(subType.elementType, topType.elementType)) || // array of subtype
             (subType is ArrayType && topType == RefType.v("java.lang.Object")) || // arrays are sub of Object
+            (subType is ArrayType && topType == RefType.v("java.io.Serializable")) || // arrays implements interface Serializable
             (topType == RefType.v("java.util.Collection") && subType.toString().contains("(List|Array|Map)".toRegex())) // collections
