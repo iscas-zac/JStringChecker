@@ -15,9 +15,9 @@ import net.amygdalum.regexparser.SpecialCharClassNode
 import net.amygdalum.regexparser.StringNode
 import net.amygdalum.regexparser.UnboundedLoopNode
 import soot.*
-import soot.JastAddJ.StringLiteral
-import java.util.regex.Pattern
+import soot.jimple.StringConstant
 import java.util.regex.PatternSyntaxException
+import kotlin.text.replace
 
 sealed interface SExpression {
     fun toStringWithTransformedName(t: (Any) -> String): String
@@ -89,9 +89,9 @@ const val str_equals_sig = "<java.lang.String: boolean equals(java.lang.Object)>
 //<java.lang.String: boolean contentEquals(java.lang.StringBuffer)>
 //<java.lang.String: boolean nonSyncContentEquals(java.lang.AbstractStringBuilder)>
 //<java.lang.String: boolean contentEquals(java.lang.CharSequence)>
-//<java.lang.String: boolean equalsIgnoreCase(java.lang.String)>
-//<java.lang.String: int compareTo(java.lang.String)>
-//<java.lang.String: int compareToIgnoreCase(java.lang.String)>
+const val equalsIgnoreCase_sig = "<java.lang.String: boolean equalsIgnoreCase(java.lang.String)>"
+const val compareTo_sig = "<java.lang.String: int compareTo(java.lang.String)>"
+const val compareToIgnoreCase = "<java.lang.String: int compareToIgnoreCase(java.lang.String)>"
 //<java.lang.String: boolean regionMatches(int,java.lang.String,int,int)>
 //<java.lang.String: boolean regionMatches(boolean,int,java.lang.String,int,int)>
 const val startsWith0_sig = "<java.lang.String: boolean startsWith(java.lang.String,int)>"
@@ -117,10 +117,10 @@ const val substring2_sig = "<java.lang.String: java.lang.String substring(int,in
 //<java.lang.String: java.lang.CharSequence subSequence(int,int)>
 const val concat_sig = "<java.lang.String: java.lang.String concat(java.lang.String)>"
 const val replace_sig = "<java.lang.String: java.lang.String replace(char,char)>"
-//<java.lang.String: boolean matches(java.lang.String)>
+const val matches_sig = "<java.lang.String: boolean matches(java.lang.String)>"
 const val contains_sig = "<java.lang.String: boolean contains(java.lang.CharSequence)>"
-//<java.lang.String: java.lang.String replaceFirst(java.lang.String,java.lang.String)>
-//<java.lang.String: java.lang.String replaceAll(java.lang.String,java.lang.String)>
+const val replaceFirst_sig = "<java.lang.String: java.lang.String replaceFirst(java.lang.String,java.lang.String)>"
+const val replaceAll_sig = "<java.lang.String: java.lang.String replaceAll(java.lang.String,java.lang.String)>"
 const val replace_cs_sig = "<java.lang.String: java.lang.String replace(java.lang.CharSequence,java.lang.CharSequence)>"
 //<java.lang.String: java.lang.String[] split(java.lang.String,int)>
 const val split_sig = "<java.lang.String: java.lang.String[] split(java.lang.String)>"
@@ -136,12 +136,12 @@ const val trim_sig = "<java.lang.String: java.lang.String trim()>"
 //<java.lang.String: java.lang.String format(java.lang.String,java.lang.Object[])>
 //<java.lang.String: java.lang.String format(java.util.Locale,java.lang.String,java.lang.Object[])>
 //<java.lang.String: java.lang.String valueOf(java.lang.Object)>
-//<java.lang.String: java.lang.String valueOf(char[])>
+const val valueOf_char_arr_sig = "<java.lang.String: java.lang.String valueOf(char[])>"
 //<java.lang.String: java.lang.String valueOf(char[],int,int)>
 //<java.lang.String: java.lang.String copyValueOf(char[],int,int)>
 //<java.lang.String: java.lang.String copyValueOf(char[])>
 //<java.lang.String: java.lang.String valueOf(boolean)>
-//<java.lang.String: java.lang.String valueOf(char)>
+const val valueOf_char_sig = "<java.lang.String: java.lang.String valueOf(char)>"
 const val str_valueOf_sig = "<java.lang.String: java.lang.String valueOf(int)>"
 //<java.lang.String: java.lang.String valueOf(long)>
 //<java.lang.String: java.lang.String valueOf(float)>
@@ -149,7 +149,7 @@ const val str_valueOf_sig = "<java.lang.String: java.lang.String valueOf(int)>"
 //<java.lang.String: java.lang.String intern()>
 //<java.lang.String: int compareTo(java.lang.Object)>
 
-//const val toString_sig = "<java.lang.StringBuffer: java.lang.String toString()>"
+const val sbu_toString_sig = "<java.lang.StringBuffer: java.lang.String toString()>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(float)>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(double)>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(java.lang.CharSequence)>"
@@ -170,7 +170,7 @@ const val str_valueOf_sig = "<java.lang.String: java.lang.String valueOf(int)>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.Appendable append(java.lang.CharSequence)>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(java.lang.String)>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.Object)>"
-//const val append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>"
+const val sbu_str_append_sig = "<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.AbstractStringBuilder append(java.lang.Object)>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.Appendable append(char)>"
 //const val append_sig = "<java.lang.StringBuffer: java.lang.Appendable append(java.lang.CharSequence,int,int)>"
@@ -426,76 +426,70 @@ const val readLine_sig = "<java.lang.BufferedReader: java.lang.String readLine()
 
 const val next_sig = "<java.util.Iterator: java.lang.Object next()>"
 
-val sig_table = listOf(length_sig, isEmpty_sig, charAt_sig, str_equals_sig, startsWith0_sig, startsWith_sig, endsWith_sig, indexOf1_sig, indexOf2_sig, indexOf3_sig, indexOf4_sig, indexOf5_sig, indexOf6_sig, substring1_sig, substring2_sig, concat_sig, replace_sig, contains_sig, replace_cs_sig, split_sig, toLowerCase_sig, toUpperCase_sig, trim_sig, str_valueOf_sig, sbu_length_sig, sb_init_sig, sb_blank_init_sig, sb_toString_sig, sb_bool_append_sig, sb_cs_append_sig, sb_char_append_sig, sb_int_append_sig, sb_sb_append_sig, sb_arr_char_append_sig, sb_csii_append_sig, sb_double_append_sig, sb_cii_append_sig, append_sig, sb_ob_append_sig, sb_long_append_sig, sb_float_append_sig, sb_length_sig, cs_toString_sig, cs_length_sig, cs_charAt_sig, cs_subSequence_sig, cs_chars_sig, cs_codePoints_sig, int_intValue_sig, int_valueOf_sig, readLine_sig)
+val complete_table = listOf(length_sig, charAt_sig, isEmpty_sig, startsWith_sig, startsWith0_sig, endsWith_sig, indexOf1_sig, indexOf2_sig, indexOf3_sig, indexOf4_sig, indexOf5_sig, indexOf6_sig, contains_sig, str_valueOf_sig, valueOf_char_sig, replace_sig, replace_cs_sig, toLowerCase_sig, toUpperCase_sig, equalsIgnoreCase_sig, concat_sig, substring2_sig, substring1_sig, trim_sig, sb_init_sig, sb_blank_init_sig, append_sig, sb_int_append_sig, sb_toString_sig, sbu_toString_sig, cs_length_sig, cs_toString_sig, cs_charAt_sig, cs_subSequence_sig, cs_chars_sig, cs_codePoints_sig, readLine_sig, int_valueOf_sig, int_intValue_sig, sb_cs_append_sig, sb_sb_append_sig, sbu_str_append_sig)
 
-fun convertLiteralRegexToSmtlib(regex: String): SExpression {
+fun convertLiteralRegexToSmtlib(regex: String): SExpression? {
+    val regex = regex.replace("\\\\", "\\u{005c}")
+        .replace("\\u{0022}", "\\\"")
+        .replace("\\u{0008}", "\\\b")
+        .replace("\\u{0009}", "\\\t")
+        .replace("\\u{000a}", "\\\n")
+        .replace("\\u{000d}", "\\\r")
+        .replace("\\u{0027}", "\\\'")
+        .replace("""\\u([0-9A-Fa-f]{4})""".toRegex()) {
+            it.groupValues[1].toInt(16).toChar().toString()
+        }
     val parser = RegexParser(regex) // TODO: some more cases when the parser is not enough
     try {
         val tree = parser.parse()
 
-        fun convertRec(node: RegexNode): SExpression {
+        fun convertRec(node: RegexNode): SExpression? {
+            fun escape(str: String): String {
+                return str.replace("\\\\", "\\u{005c}")
+                    .replace("\\\"", "\\u{0022}")
+                    .replace("\\\b", "\\u{0008}")
+                    .replace("\\\t", "\\u{0009}")
+                    .replace("\\\n", "\\u{000a}")
+                    .replace("\\\r", "\\u{000d}")
+                    .replace("\\\'", "\\u{0027}")
+                    .map { if (it.code > 127) "\\u{${it.code.toString(16).padStart(4, '0')}}" else it }
+                    .joinToString("")
+                    .let { "\"$it\"" }
+            }
             return when (node) {
-                is StringNode -> Atom(node.value)
-                is SpecialCharClassNode -> SList("re.union", *node.toCharNodes().map { convertRec(it) }.toTypedArray())
-                is CharClassNode -> SList("re.union", *node.toCharNodes().map { convertRec(it) }.toTypedArray())
-                is AlternativesNode -> SList("re.union", *node.subNodes.map { convertRec(it) }.toTypedArray())
-                is SingleCharNode -> Atom(node.value.toString())
-                is RangeCharNode -> SList("re.range", node.from.toString(), node.to.toString())
-                is CompClassNode -> SList("re.comp", convertRec(node.invert(null)))
+                is StringNode -> SList("str.to_re", escape(node.value))
+                is SpecialCharClassNode -> SList("re.union", *node.toCharNodes().map { convertRec(it)!! }.toTypedArray())
+                is CharClassNode -> SList("re.union", *node.toCharNodes().map { convertRec(it)!! }.toTypedArray())
+                is AlternativesNode -> SList("re.union", *node.subNodes.map { convertRec(it)!! }.toTypedArray())
+                is SingleCharNode -> SList("str.to_re", escape(node.value.toString()))
+                is RangeCharNode -> SList("re.range", SList("str.to_re", escape(node.from.toString())), SList("str.to_re", escape(node.to.toString())))
+                is CompClassNode -> SList("re.comp", convertRec(node.invert(null))!!)
                 is AnyCharNode -> Atom("re.allchar")
                 is GroupNode -> convertRec(node.subNode)
                 is ConcatNode -> SList("re.++", node.subNodes.map { convertRec(it) }.toTypedArray())
-                is OptionalNode -> SList("re.opt", convertRec(node.subNode))
+                is OptionalNode -> SList("re.opt", convertRec(node.subNode)!!)
                 is UnboundedLoopNode -> {
-                    if (node.from == 0) SList("re.*", convertRec(node.subNode))
-                    else if (node.from == 1) SList("re.+", convertRec(node.subNode))
+                    if (node.from == 0) SList("re.*", convertRec(node.subNode)!!)
+                    else if (node.from == 1) SList("re.+", convertRec(node.subNode)!!)
                     else SList(
                         "str.++",
-                        SList(SList("_", "re.^", node.from), convertRec(node.subNode)),
-                        SList("re.*", convertRec(node.subNode))
+                        SList(SList("_", "re.^", node.from), convertRec(node.subNode)!!),
+                        SList("re.*", convertRec(node.subNode)!!)
                     )
                 }
 
-                is BoundedLoopNode -> SList(SList("_", "re.loop", node.from, node.to), convertRec(node.subNode))
-                else -> SList() // TODO: error
+                is BoundedLoopNode -> SList(SList("_", "re.loop", node.from, node.to), convertRec(node.subNode)!!)
+                else -> null
             }
         }
 
         return convertRec(tree)
-    } catch (e: RegexCompileException) {
-        return SList() // TODO: error
+    } catch (e: Exception) {
+        when (e) {
+            is RegexCompileException, is PatternSyntaxException, is NullPointerException -> return null
+            else -> throw e
+        }
     }
-}
-fun partialSolutionForRegex(regex: String): SExpression {
-    // TODO: if able, use a regex processor from the library instead
-    fun localProcessor(s: String): SExpression {
-        var cursor = "(.*?)[^\\\\][.*?+^\\-]".toRegex()
-        return SList() // TODO
-    }
-    var res = "^(.*?)(?<!\\\\)([\\[(])(.*?)".toRegex().find(regex)
-    if (res != null) {
-        val (before, symbol, rem) = res.destructured
-        res = if (symbol == "[")
-            "^(.*?)(?<!\\\\)(])(.*?)".toRegex().find(rem)
-        else
-            "^(.*?)(?<!\\\\)(\\))(.*?)".toRegex().find(rem)
-        if (res == null) return Atom("***") // TODO: wrong case
-        val (mid, tail) = res.destructured
-        val content = if (symbol == "[") {
-            SList(
-                "re.union",
-                *mid.split("(?<!\\\\)|".toRegex())
-                    .map { localProcessor(it) }
-                    .toTypedArray()
-            )
-        } else localProcessor(mid)
-        return SList(
-            "re.++",
-            localProcessor(before),
-            content,
-            partialSolutionForRegex(tail)
-        )
-    } else return localProcessor(regex)
 }
 
 fun main() { print(convertLiteralRegexToSmtlib("[zbc.*?")) }
@@ -774,7 +768,7 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
             )
         )
 
-        funcs["valueOf/${str_valueOf_sig.hashCode()}"] = SList(
+        funcs["valueOf/${str_valueOf_sig.hashCode()}"] = SList( // TODO: for negatives
             "define-fun",
             "valueOf/${str_valueOf_sig.hashCode()}",
             SList(
@@ -784,6 +778,19 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
             SList(
                 "str.from_int",
                 "digits"
+            )
+        )
+
+        funcs["valueOf/${valueOf_char_sig.hashCode()}"] = SList(
+            "define-fun",
+            "valueOf/${valueOf_char_sig.hashCode()}",
+            SList(
+                SList("char", "Int")
+            ),
+            "String",
+            SList(
+                "str.from_code",
+                "char"
             )
         )
 
@@ -859,6 +866,42 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
                     "\"${char.uppercaseChar()}\""
                 )
             }
+        )
+
+        funcs["equalsIgnoreCase/${equalsIgnoreCase_sig.hashCode()}"] = SList(
+            "define-fun",
+            "equalsIgnoreCase/${equalsIgnoreCase_sig.hashCode()}",
+            SList(
+                SList("this", "String"),
+                SList("another", "String")
+            ),
+            "String",
+            SList(
+                "let",
+                SList(
+                    SList("upper_this",
+                        ('a'..'z').fold(Atom("this") as SExpression) { acc, char ->
+                            SList(
+                                "str.replace_all",
+                                acc,
+                                "\"$char\"",
+                                "\"${char.uppercaseChar()}\""
+                            )
+                        }
+                    ),
+                    SList("upper_another",
+                        ('a'..'z').fold(Atom("another") as SExpression) { acc, char ->
+                            SList(
+                                "str.replace_all",
+                                acc,
+                                "\"$char\"",
+                                "\"${char.uppercaseChar()}\""
+                            )
+                        }
+                    )
+                ),
+                SList("=", "upper_this", "upper_another")
+            )
         )
 
         funcs["concat/${concat_sig.hashCode()}"] = SList(
@@ -1143,6 +1186,16 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
             "s"
         )
 
+        funcs["toString/${sbu_toString_sig.hashCode()}"] = SList(
+            "define-fun",
+            "toString/${sbu_toString_sig.hashCode()}",
+            SList(
+                SList("s", "String")
+            ),
+            "String",
+            "s"
+        )
+
         funcs["length/${cs_length_sig.hashCode()}"] = SList(
             "define-fun",
             "length/${cs_length_sig.hashCode()}",
@@ -1180,6 +1233,25 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
                 )
             )
         )
+
+        listOf("append/${sb_cs_append_sig.hashCode()}",
+        "append/${sb_sb_append_sig.hashCode()}",
+        "append/${sbu_str_append_sig.hashCode()}").forEach {
+            funcs[it] = SList(
+                "define-fun",
+                it,
+                SList(
+                    SList("s", "String"),
+                    SList("tail", "String")
+                ),
+                "String",
+                SList(
+                    "str.++",
+                    "s",
+                    "tail"
+                )
+            )
+        }
 
         funcs["subSequence/${cs_subSequence_sig.hashCode()}"] = SList(
             "define-fun",
@@ -1253,6 +1325,7 @@ fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): Lis
         return funcs
     }
 
+    // make cast-from-A-to-A defined
     fun trivialCasts(name: String, types: Pair<List<Any>, Any>): SList? {
         try {
             val (ty1, ty2) = name.removePrefix("cast-from-").split("-to-")
@@ -1434,6 +1507,36 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
             )
         }
 
+        "valueOf/${valueOf_char_arr_sig.hashCode()}" -> {
+            val str = args[0]
+            val charArray = args[1]
+            TopLevel(
+                SList(
+                    "assert",
+                    SList(
+                        "forall",
+                        SList(SList("i", "Int")),
+                        SList( // TODO: as for out-of-range integers
+                            "=",
+                            SList(
+                                "select",
+                                charArray,
+                                "i"
+                            ),
+                            SList(
+                                "str.to_code",
+                                SList(
+                                    "str.at",
+                                    str,
+                                    "i"
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        }
+
         "append/${append_sig.hashCode()}" -> {
             val sbObject = args[0]
             val tail = args[1]
@@ -1455,10 +1558,91 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
             )
         }
 
+        "matches/${matches_sig.hashCode()}" -> {
+            val str = args[0]
+            val pattern = args[1]
+            if (pattern is StringConstant) {
+                val regex = convertLiteralRegexToSmtlib(pattern.value)
+                if (regex == null) null else
+                    TopLevel( // TODO: a weak condition, asserting every item in the array contains no such regex
+                        SList("assert",
+                            SList(
+                                "=",
+                                SList(
+                                    funcName,
+                                    *args.toTypedArray()
+                                ),
+                                SList(
+                                    "str.in_re",
+                                    str,
+                                    regex
+                                )
+                            )
+                        )
+                    )
+            } else null
+        }
+
+        "replaceFirst/${replaceFirst_sig.hashCode()}" -> { /// TODO: a weaker replacement, the regex should be
+            /// literal, the regex should be valid for a little checker, and the `str.replace_re` should match the behavior
+            val str = args[0]
+            val pattern = args[1]
+            val replacement = args[2]
+            if (pattern is StringConstant) {
+                val regex = convertLiteralRegexToSmtlib(pattern.value)
+                if (regex == null) null else
+                    TopLevel(
+                        SList("assert",
+                            SList(
+                                "=",
+                                SList(
+                                    funcName,
+                                    *args.toTypedArray()
+                                ),
+                                SList(
+                                    "str.replace_re",
+                                    str,
+                                    regex,
+                                    replacement
+                                )
+                            )
+                        )
+                    )
+            } else null
+        }
+
+        "replaceAll/${replaceAll_sig.hashCode()}" -> {
+            val str = args[0]
+            val pattern = args[1]
+            val replacement = args[2]
+            if (pattern is StringConstant) {
+                val regex = convertLiteralRegexToSmtlib(pattern.value)
+                if (regex == null) null else
+                    TopLevel(
+                        SList("assert",
+                            SList(
+                                "=",
+                                SList(
+                                    funcName,
+                                    *args.toTypedArray()
+                                ),
+                                SList(
+                                    "str.replace_re_all",
+                                    str,
+                                    regex,
+                                    replacement
+                                )
+                            )
+                        )
+                    )
+            } else null
+        }
+
         "split/${split_sig.hashCode()}" -> {
             val pattern = args[1]
-            if (pattern is StringLiteral) {
-                val regex = convertLiteralRegexToSmtlib(pattern.toString())
+            if (pattern is StringConstant) {
+                val regex = convertLiteralRegexToSmtlib(pattern.value)
+                if (regex == null) null else
                 TopLevel( // TODO: a weak condition, asserting every item in the array contains no such regex
                     SList("assert",
                         SList(
@@ -1492,9 +1676,10 @@ inline fun postconditionOfFunctions(funcName: String, args: List<Value>, getName
 
         "append/${sb_ob_append_sig.hashCode()}",
         "append/${sb_bool_append_sig.hashCode()}",
-        "append/${sb_cs_append_sig.hashCode()}",
         "append/${sb_int_append_sig.hashCode()}",
+        "append/${sb_cs_append_sig.hashCode()}",
         "append/${sb_sb_append_sig.hashCode()}",
+        "append/${sbu_str_append_sig.hashCode()}",
         "append/${sb_arr_char_append_sig.hashCode()}",
         "append/${sb_csii_append_sig.hashCode()}",
         "append/${sb_double_append_sig.hashCode()}",
