@@ -93,8 +93,10 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             val typeClasses =
                 types.map { if (it is SootClass) RefType.v(it) else it }.filterNot { it == valueToBeCoerced.type }
 
-            if (typeClasses.contains(BooleanType.v()) && valueToBeCoerced.type is IntType)
+            if (typeClasses.contains(BooleanType.v()) && valueToBeCoerced.type is IntType && !upcastToCommonParent)
                 return "(ite (= 1 ${transformValue(valueToBeCoerced)}) true false)" // special downcast
+            else if (typeClasses.contains(IntType.v()) && valueToBeCoerced.type is BooleanType && upcastToCommonParent)
+                return "(ite ${transformValue(valueToBeCoerced)} 1 0)" // upcast
 
             if (typeClasses.any { it is DoubleType } && valueToBeCoerced.type is IntType)
                 return "((_ to_fp 11 53) roundNearestTiesToEven (to_real ${transformValue(valueToBeCoerced)}))" // TODO: support complete floating point representation
@@ -468,12 +470,20 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                         "(fp.leq ${coerce(value.op1, types)} ${coerce(value.op2, types)})"
                     }
 
-                    else -> "(${value.symbol.trim()} ${transformValue(value.op1)} ${transformValue(value.op2)})"
+                    else -> {
+                        val types = listOf(value.op1.type, value.op2.type)
+                        "(${value.symbol.trim()} ${coerce(value.op1, types, true)} ${coerce(value.op2, types, true)})"
+//                        "(${value.symbol.trim()} ${transformValue(value.op1)} ${transformValue(value.op2)})"
+                    }
                 }
 
                 is Local -> transformName(value)
                 is CastExpr -> {
-                    if (value.op.type is NullType) "null-${inlineArrayName(value.castType)}"
+                    if (value.op.type is NullType) {
+                        val nullName = "null-${inlineArrayName(value.castType)}"
+                        placeholderDeclarations[nullName] = value.castType
+                        nullName
+                    }
                     else {
                         val castFuncName = "cast-from-${
                             inlineArrayName(value.op.type)

@@ -105,7 +105,12 @@ fun interpret(path: String) {
         }
         slicer.getApiTypes().forEach { (meth, cnt) -> stringStat.merge(meth, cnt) { acc, n -> acc + n } }
     }
-    println(stringStat.toList().sortedBy { it.second }.joinToString("\n"))
+    val signatureTableForDefinition = model_list.filter { it.isFullyModeled }.map { it.signature to it }.toMap()
+    val signatureTableForAll = model_list.map { it.signature to it }.toMap()
+    println(stringStat.toList().sortedBy { it.second }.map { "$it ${it.first.toString() in signatureTableForAll}" }
+        .joinToString("\n"))
+    println("${stringStat.count { (meth, _) -> meth.toString() in signatureTableForDefinition }} / ${stringStat.count { (meth, _) -> meth.toString() in signatureTableForAll }} / ${stringStat.count()}")
+    println("${stringStat.filter { (meth, _) -> meth.toString() in signatureTableForDefinition }.values.sum()} / ${stringStat.filter { (meth, _) -> meth.toString() in signatureTableForAll }.values.sum()} / ${stringStat.values.sum()}")
 }
 
 /** accept the class file path and directly emit the output during transform

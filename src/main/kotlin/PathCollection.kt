@@ -61,6 +61,7 @@ fun constructPath(cfg: BlockGraph): Set<List<Block>> {
     return finalPaths
 }
 
+/// it used to be a program slicer, but now is a base class to support path unwinding
 class Slicer(val programPath: List<Block>) {
     val stmts = programPath.asReversed().map { it.toList() }.flatten()
     private var constraintChain: List<Condition>? = null
@@ -152,9 +153,9 @@ class Slicer(val programPath: List<Block>) {
                 unit.invokeExpr.method
             else null
         }.filter {
-            it.name.contains("toString") ||
+            //it.name.contains("toString") ||
                     it.declaringClass.name.contains("java.lang.String") ||
-                    it.declaringClass.name.contains("CharSequence")
+                    it.declaringClass.name.contains("java.lang.CharSequence")
         }.groupBy { it }
             .mapValues { it.value.count() }
     }
@@ -166,7 +167,7 @@ class Slicer(val programPath: List<Block>) {
     }.filter {
         it.name.contains("toString") ||
                 it.declaringClass.name.contains("java.lang.String") ||
-                it.declaringClass.name.contains("CharSequence")
+                it.declaringClass.name.contains("java.lang.CharSequence")
     }
 
     // the pathItems related to every local variable
