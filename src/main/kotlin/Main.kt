@@ -4,18 +4,21 @@ import soot.toolkits.graph.ExceptionalBlockGraph
 import java.io.File
 import java.util.*
 
+const val path_limit = 10
 
 fun main(args: Array<String>) {
+    println(args[0])
     val dataRoot = File(args[0])
     if (!dataRoot.isDirectory() && !dataRoot.mkdir()) return
     val jar = dataRoot.listFiles { _, name -> name.endsWith(".jar") }?.first()!!
     val smtFolder = File(dataRoot, "smt")
     if (!smtFolder.isDirectory() && !smtFolder.mkdir()) return
+    val stringStat = mutableMapOf<SootMethod, Int>()
     for (pathsOfFunc in slice(jar.absolutePath)) { // write to .path files
         val dir = File(smtFolder, "method-" + pathsOfFunc.key.replace("<", "《").replace(">", "》"))
         if (dir.isDirectory() || dir.mkdir()) {
             val (b, slices) = pathsOfFunc.value
-            slices.filter { it.isStringRelated() }.take(10000).forEachIndexed { index, slicer ->
+            slices.filter { it.isStringRelated() }.take(path_limit).forEachIndexed { index, slicer ->
                 val (normal, deviants) = compatibleSmtlibTransformer(slicer)
                 File(dir, "$index.path").writeText(normal)
                 if (b.method.exceptions.isEmpty()) // TODO: for now only include deviants if not throws
@@ -96,12 +99,16 @@ fun interpret(path: String) {
     sliceAndOutput(jar.absolutePath) { funcName, body, index, slicer ->
         val dir = File(smtFolder, "method-" + funcName.replace("<", "《").replace(">", "》"))
         if (dir.isDirectory() || dir.mkdir() && slicer.getApiTypes().values.sum() > 0) {
+            slicer.setMethodBody(body)
             val (normal, deviants) = compatibleSmtlibTransformer(slicer)
-            File(dir, "$index.path").writeText(normal)
-            if (body.method.exceptions.isEmpty()) // TODO: for now only include deviants if not throws
-                deviants.forEachIndexed { num, text ->
-                    File(dir, "$index-deviant-$num.path").writeText(text)
-                }
+            val additional = "\n;seq ${slicer.getApisInvokeOrder().joinToString(";\t")}\n;cnt {${
+                slicer.getApiTypes().map { (k, v) -> "\"$k\": $v" }.joinToString(",")
+            }}\n;stmts ${slicer.stmts.joinToString(";\t")}\n;block_num ${slicer.programPath.size}"
+            File(dir, "$index.path").writeText(normal + additional)
+//            if (body.method.exceptions.isEmpty()) // TODO: for now only include deviants if not throws
+//                deviants.forEachIndexed { num, text ->
+//                    File(dir, "$index-deviant-$num.path").writeText(text)
+//                }
         }
         slicer.getApiTypes().forEach { (meth, cnt) -> stringStat.merge(meth, cnt) { acc, n -> acc + n } }
     }
@@ -132,8 +139,7 @@ fun sliceAndOutput(classPath: String, output: (String, Body, Int, Slicer) -> Uni
             val start = ind
             // unroll the list operation to sequence
             for (paths in pathYielder(ExceptionalBlockGraph(b))) {
-                // TODO: limit the num for now
-                if (ind > start + 500) break
+                if (ind > start + path_limit) break
                 for (path in paths) {
                     if (b.method?.signature != null)
                         output(
