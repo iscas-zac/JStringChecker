@@ -26,10 +26,11 @@ fun pathYielder(cfg: BlockGraph): Sequence<Set<List<Block>>> {
     var growingPaths = listWrapper(cfg.heads.toSet())
     var items = cfg.heads.toSet()
     return generateSequence {
-        if (items.all { cfg.tails.contains(it) }) null
+        if (cfg.toList().size == 1 && items.isNotEmpty()) { items = emptySet(); setOf(listOf(cfg.single())) }
+        else if (items.all { cfg.tails.contains(it) }) null
         else {
             items = growingPaths.getItemsAppearingInEachPathsNoMoreThan(growingPaths.mapNotNull { it.firstOrNull() }
-                .toSet(), 2).toSet()
+                .toSet(), 15).toSet()
             growingPaths =
                 growingPaths.map { p ->
                     items.map { block ->
@@ -48,7 +49,7 @@ fun constructPath(cfg: BlockGraph): Set<List<Block>> {
     val finalPaths = emptySet<List<Block>>().toMutableSet()
     while (items.any { !cfg.tails.contains(it) }) {
         items = growingPaths.mapNotNull { it.firstOrNull() }.toSet()
-        items = growingPaths.getItemsAppearingInEachPathsNoMoreThan(items, 2).toSet()
+        items = growingPaths.getItemsAppearingInEachPathsNoMoreThan(items, 15).toSet()
         growingPaths =
             growingPaths.map { p ->
                 items.map { block ->
@@ -129,8 +130,8 @@ class Slicer(val programPath: List<Block>) {
                     else {
                         println(prev.succs.filter { it.indexInMethod != next.indexInMethod })
                         println(next)
-                        println("jump: " + jumpStatement)
-                        println("to: " + next.head)
+                        println("jump: $jumpStatement")
+                        println("to: ${next.head}")
                         Nop("DEBUG: $jumpStatement")
                     } // TODO: add an exception item
                 }
@@ -168,6 +169,24 @@ class Slicer(val programPath: List<Block>) {
         it.name.contains("toString") ||
                 it.declaringClass.name.contains("java.lang.String") ||
                 it.declaringClass.name.contains("java.lang.CharSequence")
+    }
+
+    private var body: Body? = null
+    fun setMethodBody(b: Body) {
+        body = b
+    }
+
+    /// get the corresponding method throw signature and compare if they are all not supertype of the parameter `ty`
+    fun checkExceptionType(ty: Type): Boolean {
+        assert(programPath.isNotEmpty() && body != null)
+        val throwTypes = body!!.method.exceptions
+        return !throwTypes.any { ty.merge(it.type, Scene.v()) == it.type }
+    }
+
+    fun getLastException(): Type? {
+        return programPath.getOrNull(0)?.last()?.let {
+            if (it is ThrowStmt) it.op.type else null
+        }
     }
 
     // the pathItems related to every local variable

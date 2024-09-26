@@ -40,6 +40,11 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
         var pre = ""
         var post = ""
 
+        /**
+         * record the possible exceptions thrown from the processed line (mainly function invocation)
+         */
+        var exceptions = listOf<Type>()
+
         fun transformName(varName: Any): String {
             val derefName = if (varName is RefType) varName.sootClass else varName
             when (derefName) {
@@ -95,7 +100,13 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
 
             if (typeClasses.contains(BooleanType.v()) && valueToBeCoerced.type is IntType && !upcastToCommonParent)
                 return "(ite (= 1 ${transformValue(valueToBeCoerced)}) true false)" // special downcast
-            else if (typeClasses.contains(IntType.v()) && valueToBeCoerced.type is BooleanType && upcastToCommonParent)
+            else if (listOf(
+                        IntType.v(), LongType.v(), ByteType.v(), CharType.v(), ShortType.v(),
+                        Scene.v().getSootClass("java.lang.Integer"), Scene.v().getSootClass("java.lang.BigInteger"),
+                        Scene.v().getSootClass("java.lang.BigDecimal"), Scene.v().getSootClass("java.lang.Short"),
+                        Scene.v().getSootClass("java.lang.Byte"), Scene.v().getSootClass("java.lang.Long")
+                    ).any { ty -> ty in typeClasses }
+                && valueToBeCoerced.type is BooleanType && upcastToCommonParent)
                 return "(ite ${transformValue(valueToBeCoerced)} 1 0)" // upcast
 
             if (typeClasses.any { it is DoubleType } && valueToBeCoerced.type is IntType)
@@ -235,6 +246,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     } else {
                         checkBaseNullity
                     }
+                    exceptions = getExceptions(funcName)
 
                     // enforce eval order by adding a temporary store
                     val ret = registerFunctionAndUpcastArguments(
@@ -501,27 +513,28 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 is ArrayRef -> {
                     val arrayType = value.base.type as ArrayType
                     val arrayTySig = "Arr-${transformName(arrayType.baseType)}-${arrayType.numDimensions}"
-                    if (arrayType.numDimensions == 1) {
-                        functions.putIfAbsent(
-                            "getIndex-${arrayTySig}",
-                            listOf(
-                                IntType.v(),
-                                ArrayType.v(arrayType.baseType, arrayType.numDimensions)
-                            ) to arrayType.baseType
-                        )
-                    } else {
-                        functions.putIfAbsent(
-                            "getIndex-${arrayTySig}",
-                            listOf(
-                                IntType.v(),
-                                ArrayType.v(arrayType.baseType, arrayType.numDimensions)
-                            ) to ArrayType.v(
-                                arrayType.baseType,
-                                arrayType.numDimensions - 1
-                            )
-                        )
-                    }
-                    "(getIndex-${arrayTySig} ${transformValue(value.index)} ${transformValue(value.base)})"
+                    "(select ${transformValue(value.base)} ${transformValue(value.index)})"
+//                    if (arrayType.numDimensions == 1) {
+//                        functions.putIfAbsent(
+//                            "getIndex-${arrayTySig}",
+//                            listOf(
+//                                IntType.v(),
+//                                ArrayType.v(arrayType.baseType, arrayType.numDimensions)
+//                            ) to arrayType.baseType
+//                        )
+//                    } else {
+//                        functions.putIfAbsent(
+//                            "getIndex-${arrayTySig}",
+//                            listOf(
+//                                IntType.v(),
+//                                ArrayType.v(arrayType.baseType, arrayType.numDimensions)
+//                            ) to ArrayType.v(
+//                                arrayType.baseType,
+//                                arrayType.numDimensions - 1
+//                            )
+//                        )
+//                    }
+//                    "(getIndex-${arrayTySig} ${transformValue(value.index)} ${transformValue(value.base)})"
                 }
 
                 else -> value.toString()// + value.javaClass
@@ -628,23 +641,24 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
     val lines = this.getPath().map { entry ->
         bundle.pre = "" // the statement to assert, e.g. "(isNull myObject)", instead of a complete assert sentence
         bundle.post = ""
+        bundle.exceptions = listOf<Type>()
         val prog = when (entry) {
             is Condition -> "(assert ${conditionExpander(entry)}) ; $entry"
             is Statement -> "${bundle.transformStmt(entry.stmt)} ; $entry"
         }
         bundle.post = if (bundle.post.isNotEmpty()) "\n" + bundle.post else ""
-        bundle.pre to (prog + bundle.post)
+        Triple(bundle.pre, (prog + bundle.post), bundle.exceptions)
     }
 
     // statement series reverting the last pre-condition
     val deviants = lines.indices.map { lines.subList(0, it + 1) } // every sublist starting at 0
-        .filter { it.last().first.isNotEmpty() } // with last element containing a pre-condition
+        .filter { it.last().first.isNotEmpty() && it.last().third.any { this.checkExceptionType(it) } } // with last element containing a pre-condition
         .map { statementsWithOptionalPreconditions ->
             statementsWithOptionalPreconditions.dropLast(1)
-                .joinToString("\n") { (pre, prog) -> (if (pre.isNotEmpty()) "(assert $pre)\n" else "") + prog } + "\n" +
+                .joinToString("\n") { (pre, prog, _) -> (if (pre.isNotEmpty()) "(assert $pre)\n" else "") + prog } + "\n" +
                     statementsWithOptionalPreconditions.last().first.let { "(assert (not ${it}))" }
         }
-    val body = lines.joinToString("\n") { (pre, prog) -> (if (pre.isNotEmpty()) "(assert $pre)\n" else "") + prog }
+    val body = lines.joinToString("\n") { (pre, prog, _) -> (if (pre.isNotEmpty()) "(assert $pre)\n" else "") + prog }
 
     // enforce the eval order of parsing functions before adding sorts
     var header = predefineFunctions(functions).joinToString("") { sExpression ->

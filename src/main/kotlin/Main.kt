@@ -1,8 +1,10 @@
 import soot.*
+import soot.jimple.Stmt
 import soot.options.Options
 import soot.toolkits.graph.ExceptionalBlockGraph
 import java.io.File
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 const val path_limit = 10
 
@@ -95,7 +97,8 @@ fun interpret(path: String) {
     val jar = dataRoot.listFiles { _, name -> name.endsWith(".jar") }?.first()!!
     val smtFolder = File(dataRoot, "smt")
     if (!smtFolder.isDirectory() && !smtFolder.mkdir()) return
-    val stringStat = mutableMapOf<SootMethod, Int>()
+    val stringStat = ConcurrentHashMap<SootMethod, Int>()
+    val meths = mutableListOf<SootMethod>()
     sliceAndOutput(jar.absolutePath) { funcName, body, index, slicer ->
         val dir = File(smtFolder, "method-" + funcName.replace("<", "《").replace(">", "》"))
         if (dir.isDirectory() || dir.mkdir() && slicer.getApiTypes().values.sum() > 0) {
@@ -104,18 +107,37 @@ fun interpret(path: String) {
             val additional = "\n;seq ${slicer.getApisInvokeOrder().joinToString(";\t")}\n;cnt {${
                 slicer.getApiTypes().map { (k, v) -> "\"$k\": $v" }.joinToString(",")
             }}\n;stmts ${slicer.stmts.joinToString(";\t")}\n;block_num ${slicer.programPath.size}"
-            File(dir, "$index.path").writeText(normal + additional)
-//            if (body.method.exceptions.isEmpty()) // TODO: for now only include deviants if not throws
-//                deviants.forEachIndexed { num, text ->
-//                    File(dir, "$index-deviant-$num.path").writeText(text)
-//                }
+            File(dir, "$index.smt2").writeText(normal + additional)
+            if (body.method.exceptions.isEmpty()) // for now only include deviants with un-catchable exceptions
+                deviants.forEachIndexed { num, text ->
+                    File(dir, "$index-deviant-$num.smt2").writeText(text + additional)
+                }
         }
-        slicer.getApiTypes().forEach { (meth, cnt) -> stringStat.merge(meth, cnt) { acc, n -> acc + n } }
+
+        // delete empty folders
+        if (dir.listFiles()?.isEmpty() == true) dir.delete()
+
+        // string api usage statistics for each method
+        if (body.method !in meths && dir.exists()) {
+            File(dir, "flags.txt").writeText("is public: ${body.method.isPublic}")
+
+            meths.add(body.method)
+            body.units.mapNotNull { unit ->
+                if ((unit as Stmt).containsInvokeExpr())
+                    unit.invokeExpr.method
+                else null
+            }.filter {
+                it.declaringClass.name.contains("java.lang.String") ||
+                        it.declaringClass.name.contains("java.lang.CharSequence")
+            }.groupBy { it }
+                .mapValues { it.value.count() }
+                .forEach { (meth, cnt) -> stringStat.merge(meth, cnt) { acc, n -> acc + n } }
+        }
     }
-    val signatureTableForDefinition = model_list.filter { it.isFullyModeled }.map { it.signature to it }.toMap()
-    val signatureTableForAll = model_list.map { it.signature to it }.toMap()
-    println(stringStat.toList().sortedBy { it.second }.map { "$it ${it.first.toString() in signatureTableForAll}" }
-        .joinToString("\n"))
+    val signatureTableForDefinition = model_list.filter { it.isFullyModeled }.associate { it.signature to it }
+    val signatureTableForAll = model_list.associate { it.signature to it }
+    println(stringStat.toList().sortedBy { it.second }
+        .joinToString("\n") { "$it ${it.first.toString() in signatureTableForAll}" })
     println("${stringStat.count { (meth, _) -> meth.toString() in signatureTableForDefinition }} / ${stringStat.count { (meth, _) -> meth.toString() in signatureTableForAll }} / ${stringStat.count()}")
     println("${stringStat.filter { (meth, _) -> meth.toString() in signatureTableForDefinition }.values.sum()} / ${stringStat.filter { (meth, _) -> meth.toString() in signatureTableForAll }.values.sum()} / ${stringStat.values.sum()}")
 }

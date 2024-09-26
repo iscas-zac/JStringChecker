@@ -31,12 +31,12 @@ class Atom(private val value: Any) : SExpression {
     }
 
     override fun toStringWithTransformedName(t: (Any) -> String): String {
-        return if (value is String) value else t(value)
+        return value as? String ?: t(value)
     }
 }
 
 class SList(vararg exps: Any) : SExpression {
-    private val value = exps.toList().map { if (it is SExpression) it else Atom(it) }
+    private val value = exps.toList().map { it as? SExpression ?: Atom(it) }
     override fun toString(): String {
         return "(${value.joinToString(" ")})"
     }
@@ -63,6 +63,7 @@ data class Interpretation(
     val name: String, val signature: String, val definition: SExpression? = null,
     val preCond: PreAssertionGenerator? = null,
     val postCond: AssertionGenerator? = null,
+    val exceptions: List<Type> = listOf(),
     val isFullyModeled: Boolean = true
 )
 
@@ -489,7 +490,8 @@ val model_list = listOf(
                     "index"
                 )
             )
-        )
+        ),
+        exceptions = listOf(Scene.v().getRefType("java.lang.IndexOutOfBoundsException"))
     ),
     Interpretation(
         name = "isEmpty",
@@ -961,7 +963,8 @@ val model_list = listOf(
                     "begin"
                 )
             )
-        )
+        ),
+        exceptions = listOf(Scene.v().getRefType("java.lang.IndexOutOfBoundsException"))
     ),
     Interpretation(
         name = "substring",
@@ -987,7 +990,8 @@ val model_list = listOf(
                     "begin"
                 )
             )
-        )
+        ),
+        exceptions = listOf(Scene.v().getRefType("java.lang.IndexOutOfBoundsException"))
     ),
     Interpretation(
         name = "trim",
@@ -1654,7 +1658,7 @@ val model_list = listOf(
                                     SList(
                                         "str.in_re",
                                         SList("select", SList(funcName, *args.toTypedArray()), "i"),
-                                        SList("re.++", "re.all", regex, "re.all")
+                                        SList("re.++", "(re.* re.all)", regex, "(re.* re.all)")
                                     )
                                 )
                             )
@@ -1793,9 +1797,12 @@ val model_list = listOf(
     )
 )
 
-val def_lookup_table = model_list.filter { it.definition != null }.map { "${it.name}/${it.signature.hashCode()}" to it }.toMap()
-val pre_lookup_table = model_list.filter { it.preCond != null }.map { "${it.name}/${it.signature.hashCode()}" to it }.toMap()
-val post_lookup_table = model_list.filter { it.postCond != null }.map { "${it.name}/${it.signature.hashCode()}" to it }.toMap()
+val def_lookup_table =
+    model_list.filter { it.definition != null }.associate { "${it.name}/${it.signature.hashCode()}" to it }
+val pre_lookup_table =
+    model_list.filter { it.preCond != null }.associate { "${it.name}/${it.signature.hashCode()}" to it }
+val post_lookup_table =
+    model_list.filter { it.postCond != null }.associate { "${it.name}/${it.signature.hashCode()}" to it }
 
 fun convertLiteralRegexToSmtlib(regex: String): SExpression? {
     val regex = regex.replace("""\\u([0-9A-Fa-f]{4})""".toRegex()) {
@@ -1814,6 +1821,7 @@ fun convertLiteralRegexToSmtlib(regex: String): SExpression? {
                     .replace("\n", "\\u{000a}")
                     .replace("\r", "\\u{000d}")
                     .replace("\'", "\\u{0027}")
+                    .replace("\u0000", "\\u{0000}")
                     .map { if (it.code > 127) "\\u{${it.code.toString(16).padStart(4, '0')}}" else it }
                     .joinToString("")
                     .let { "\"$it\"" }
@@ -1853,12 +1861,12 @@ fun convertLiteralRegexToSmtlib(regex: String): SExpression? {
                     else if (node.from == 1) SList("re.+", convertRec(node.subNode)!!)
                     else SList(
                         "str.++",
-                        SList(SList("_", "re.^", node.from), convertRec(node.subNode)!!),
+                        SList(SList("_", "re.^", node.from.toString()), convertRec(node.subNode)!!),
                         SList("re.*", convertRec(node.subNode)!!)
                     )
                 }
 
-                is BoundedLoopNode -> SList(SList("_", "re.loop", node.from, node.to), convertRec(node.subNode)!!)
+                is BoundedLoopNode -> SList(SList("_", "re.loop", node.from.toString(), node.to.toString()), convertRec(node.subNode)!!)
                 else -> null
             }
         }
@@ -1875,6 +1883,8 @@ fun convertLiteralRegexToSmtlib(regex: String): SExpression? {
 fun main() {
     print(convertLiteralRegexToSmtlib("[zbc.*?"))
 }
+
+fun getExceptions(function: String) = def_lookup_table[function]?.exceptions ?: listOf()
 
 fun predefineFunctions(functions: MutableMap<String, Pair<List<Any>, Any>>): List<SExpression> {
 

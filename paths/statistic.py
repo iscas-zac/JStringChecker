@@ -10,22 +10,27 @@ import json
 
 # foreach ($f in "C:\Users\yyzha\Desktop\jars\dataset\antlr\", "C:\Users\yyzha\Desktop\jars\dataset\commons-io\", "C:\Users\yyzha\Desktop\jars\dataset\commons-lang\", "C:\Users\yyzha\Desktop\jars\dataset\commons-logging\", "C:\Users\yyzha\Desktop\jars\dataset\efficient-boot-common\", "C:\Users\yyzha\Desktop\jars\dataset\fastjson\", "C:\Users\yyzha\Desktop\jars\dataset\freemarker\", "C:\Users\yyzha\Desktop\jars\dataset\gson\", "C:\Users\yyzha\Desktop\jars\dataset\handlebars\", "C:\Users\yyzha\Desktop\jars\dataset\httpclient\", "C:\Users\yyzha\Desktop\jars\dataset\hutool\", "C:\Users\yyzha\Desktop\jars\dataset\javacc\", "C:\Users\yyzha\Desktop\jars\dataset\junit\", "C:\Users\yyzha\Desktop\jars\dataset\lombok\", "C:\Users\yyzha\Desktop\jars\dataset\mybatis\", "C:\Users\yyzha\Desktop\jars\dataset\okhttp\", "C:\Users\yyzha\Desktop\jars\dataset\slf4j\", "C:\Users\yyzha\Desktop\jars\dataset\tomcat\", "C:\Users\yyzha\Desktop\jars\dataset\junit-jupiter-api\", "C:\Users\yyzha\Desktop\jars\dataset\StringTemplate\", "C:\Users\yyzha\Desktop\jars\dataset\log4j\") { & python D:\IdeaProjects\test_native_build\paths\statistic.py $f }
 #for subfolder in /path/to/root_folder/*; do echo "Processing folder: $subfolder"; [ -d "$subfolder" ] && ls "$subfolder"; done
-directoryPath = sys.argv[1] if len(sys.argv) > 1 else "D:/IdeaProjects/paths/gson"
+directoryPath = sys.argv[1] if len(sys.argv) > 1 else "D:/IdeaProjects/paths/gson/"
+if directoryPath[-1] != '\\':
+    directoryPath += '\\'
 smt2Files = glob.glob("**/*.smt2", root_dir=directoryPath, recursive=True)
-timeout = 10
+timeout = 60
 totalCount = len(smt2Files)
 
 with open(directoryPath + f'/simple_statistics.json', 'w') as f:
     f.truncate(0)
 lock = filelock.FileLock(directoryPath + f'/simple_statistics.lock')
-def get_statistics(file, cnt, validCount, invalidCount, slowest, slowestFile, json_array):
+
+import os
+def get_statistics(file: str, cnt, validCount, invalidCount, slowest, slowestFile, json_array):
     print(f"\r{cnt.value}/{totalCount} {file}", end="")
     json_array_item = {"filename": file}
     file = directoryPath + file
     for cmd, solver, error_pattern in [
         (["z3", file], "z3", lambda line: b"(error \"line" in line and b"unsat core" not in line and b"model is not available" not in line),
-        ([R"C:\Users\yyzha\Desktop\jars\cvc5.exe", file], "cvc5", lambda line: b"(error \"Parse Error" in line),
-        ([R"D:\learning\mathsat-5.6.10-win64-msvc\bin\mathsat.exe", file], "mathsat", lambda line: b"(error" in line and b"(error \"no unsat" not in line and b"(error \"model" not in line),
+        ([R"D:\learning\jars\cvc5.exe", file], "cvc5", lambda line: b"(error \"Parse Error" in line),
+        ([R"D:\learning\z3-noodler\build\z3.exe", file], "z3-noodler", lambda line: b"(error \"line" in line and b"unsat core" not in line and b"model is not available" not in line),
+        # ([R"D:\learning\mathsat-5.6.10-win64-msvc\bin\mathsat.exe", file], "mathsat", lambda line: b"(error" in line and b"(error \"no unsat" not in line and b"(error \"model" not in line),
         (["java", "-Xss20000k", "-Xmx2000m", "-cp", R"D:\learning\ostrich\target\scala-2.11\ostrich-assembly-1.3.5.jar", "ostrich.OstrichMain", "+incremental", file], "ostrich", lambda line: line == b"error" or (b"(error" in line and b"(error \"no unsat" not in line and b"(error \"no model" not in line)),
     ]:
         startTime = time.time()
@@ -99,7 +104,6 @@ def get_statistics(file, cnt, validCount, invalidCount, slowest, slowestFile, js
         json_array_item[solver]["stdout"] = out.decode("utf-8", errors="ignore")
         json_array_item[solver]["stderr"] = err
         
-
     with open(file, 'r') as f:
         content = f.read()
         lines = content.splitlines()

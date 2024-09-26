@@ -1,4 +1,4 @@
-
+# D:\Programs\Scoop\apps\python\current\python.exe D:\IdeaProjects\test_native_build\paths\plot.py C:\Users\yyzha\Desktop\jars\dataset
 import sys
 import json
 import matplotlib.pyplot as plt
@@ -58,6 +58,7 @@ for item in comp:
         else:
             a[k] = item["api_count"][k]
 a = [i for i in a if not ("String:" in i or "StringBuffer:" in i or "StringBuilder:" in i)]
+print("api count")
 print(len(a))
 print(a)
 
@@ -70,7 +71,9 @@ print('\n'.join(err[:10]))
 # Sample 1D data
 runtimes = {label: [dot[label]['run_time'] for dot in arr] for label in labels}
 memorys = {label: [dot[label]['memory'] / 1024**2 for dot in arr] for label in labels}
-print("\n".join(f"{item['filename'].split('/')[6]}/{item['filename'].split('/')[-1].strip('.smt2')} & {item['z3']['run_time']:.3f} & {item['z3']['is_sat']} & {item['cvc5']['run_time']:.3f} & {item['cvc5']['is_sat']} \\\\" for item in arr if item["z3"]["run_time"] > 1 or item["cvc5"]["run_time"] > 1 or item["z3"]["is_sat"] not in ["sat", "unsat"] or item["cvc5"]["is_sat"] not in ["sat", "unsat"]))
+
+print("annomalies:")
+print("\n".join(f"{item['filename'].split('/')[6]}/{item['filename'].split('/')[-1].strip('.smt2')} & {item['z3']['run_time']:.3f} & {item['z3']['is_sat']} & {item['cvc5']['run_time']:.3f} & {item['cvc5']['is_sat']} \\\\" for item in arr if item["z3"]["run_time"] > 1 or item["cvc5"]["run_time"] > 1 or item["z3"]["is_sat"] not in ["sat", "unsat"] or item["cvc5"]["is_sat"] not in ["sat", "unsat"] or item["z3"]["is_sat"] != item["cvc5"]["is_sat"]))
 # print("\n".join(f"{item['filename']} & {item['z3']['run_time']:.2f} & {item['z3']['is_sat']} & {item['cvc5']['run_time']:.2f} & {item['cvc5']['is_sat']} \\\\" for item in arr if item["z3"]["run_time"] > 1 or (item["cvc5"]["run_time"] > 1 and not contains(item["filename"], 'fun-rec'))))
 
 print("\n".join(f"{solver} time < 0.05: {sum(c < 0.05 for c in runtimes[solver])}" for solver in labels))
