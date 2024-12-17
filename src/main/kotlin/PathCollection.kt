@@ -156,7 +156,8 @@ class Slicer(val programPath: List<Block>) {
         }.filter {
             //it.name.contains("toString") ||
                     it.declaringClass.name.contains("java.lang.String") ||
-                    it.declaringClass.name.contains("java.lang.CharSequence")
+                    it.declaringClass.name.contains("java.lang.CharSequence") ||
+                            it.declaringClass.name.contains("StringUtils")
         }.groupBy { it }
             .mapValues { it.value.count() }
     }
@@ -168,7 +169,8 @@ class Slicer(val programPath: List<Block>) {
     }.filter {
         it.name.contains("toString") ||
                 it.declaringClass.name.contains("java.lang.String") ||
-                it.declaringClass.name.contains("java.lang.CharSequence")
+                it.declaringClass.name.contains("java.lang.CharSequence") ||
+                it.declaringClass.name.contains("StringUtils")
     }
 
     private var body: Body? = null

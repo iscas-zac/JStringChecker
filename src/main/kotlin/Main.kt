@@ -100,7 +100,7 @@ fun interpret(path: String) {
     val stringStat = ConcurrentHashMap<SootMethod, Int>()
     val meths = mutableListOf<SootMethod>()
     sliceAndOutput(jar.absolutePath) { funcName, body, index, slicer ->
-        val dir = File(smtFolder, "method-" + funcName.replace("<", "《").replace(">", "》"))
+        val dir = File(smtFolder, "method-" + funcName.replace("<", "\$lt;").replace(">", "\$gt;"))
         if (dir.isDirectory() || dir.mkdir() && slicer.getApiTypes().values.sum() > 0) {
             slicer.setMethodBody(body)
             val (normal, deviants) = compatibleSmtlibTransformer(slicer)
@@ -128,7 +128,8 @@ fun interpret(path: String) {
                 else null
             }.filter {
                 it.declaringClass.name.contains("java.lang.String") ||
-                        it.declaringClass.name.contains("java.lang.CharSequence")
+                        it.declaringClass.name.contains("java.lang.CharSequence") ||
+                        it.declaringClass.name.contains("StringUtils")
             }.groupBy { it }
                 .mapValues { it.value.count() }
                 .forEach { (meth, cnt) -> stringStat.merge(meth, cnt) { acc, n -> acc + n } }
@@ -136,10 +137,11 @@ fun interpret(path: String) {
     }
     val signatureTableForDefinition = model_list.filter { it.isFullyModeled }.associate { it.signature to it }
     val signatureTableForAll = model_list.associate { it.signature to it }
-    println(stringStat.toList().sortedBy { it.second }
-        .joinToString("\n") { "$it ${it.first.toString() in signatureTableForAll}" })
+//    println(stringStat.toList().sortedBy { it.second }
+//        .joinToString("\n") { "$it ${it.first.toString() in signatureTableForAll}" })
     println("${stringStat.count { (meth, _) -> meth.toString() in signatureTableForDefinition }} / ${stringStat.count { (meth, _) -> meth.toString() in signatureTableForAll }} / ${stringStat.count()}")
     println("${stringStat.filter { (meth, _) -> meth.toString() in signatureTableForDefinition }.values.sum()} / ${stringStat.filter { (meth, _) -> meth.toString() in signatureTableForAll }.values.sum()} / ${stringStat.values.sum()}")
+    println("${stringStat.filter { (meth, _) -> meth.toString().contains("StringUtils") }.values.sum()} / ${stringStat.filter { (meth, _) -> !meth.toString().contains("StringUtils") }.values.sum()}")
 }
 
 /** accept the class file path and directly emit the output during transform

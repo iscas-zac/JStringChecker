@@ -16,5 +16,7 @@ fun main() {
         val file = "\\hutool"
         File(file, "smt").deleteRecursively()
         interpret(file)
+//        println(model_list.joinToString(",\n") { "\"${it.signature}\": ${if (it.definition != null) 2 else if (it.preCond != null || it.postCond != null) 1 else 0}" })
+        print(model_list.filter { it.definition != null }.size)
     }
 }

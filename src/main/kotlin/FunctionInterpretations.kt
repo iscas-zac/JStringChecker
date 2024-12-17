@@ -1814,16 +1814,12 @@ fun convertLiteralRegexToSmtlib(regex: String): SExpression? {
 
         fun convertRec(node: RegexNode): SExpression? {
             fun escape(str: String): String {
-                return str.replace("\\", "\\u{005c}")
-                    .replace("\"", "\\u{0022}")
-                    .replace("\b", "\\u{0008}")
-                    .replace("\t", "\\u{0009}")
-                    .replace("\n", "\\u{000a}")
-                    .replace("\r", "\\u{000d}")
-                    .replace("\'", "\\u{0027}")
-                    .replace("\u0000", "\\u{0000}")
-                    .map { if (it.code > 127) "\\u{${it.code.toString(16).padStart(4, '0')}}" else it }
+                return str
+                    .map { if (it.code > 126 || it.code < 32) "\\u{${it.code.toString(16).padStart(4, '0')}}" else it }
                     .joinToString("")
+                    .replace("\\", "\\u{005c}")
+                    .replace("\"", "\\u{0022}")
+                    .replace("\'", "\\u{0027}")
                     .let { "\"$it\"" }
             }
             return when (node) {

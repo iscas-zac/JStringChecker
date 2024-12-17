@@ -4,10 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="af8a0f01-479c-4506-821d-141e3f1f6767" name="更改" comment="add: batch syntactic error detection script">
+    <list default="true" id="af8a0f01-479c-4506-821d-141e3f1f6767" name="更改" comment="fix: uncatched exception check and various refactors and fixes">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/JpfConfigGenerator.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/paths/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/paths/plot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/Driver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/Driver.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/FunctionInterpretations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/FunctionInterpretations.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/PathCollection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/PathCollection.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,8 +88,8 @@
     &quot;accountId&quot;: &quot;30c463b8-5061-47c4-a844-e1f3ef3b406f&quot;
   }
 }</component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="jar://$PROJECT_DIR$/../../Programs/Scoop/apps/gradle/current/.gradle/caches/modules-2/files-2.1/org.soot-oss/soot/4.4.1/d72169e83fa98cd0a13d36a9e4792c658e9ad72e/soot-4.4.1.jar!/soot/jimple/NewExpr.class" root0="SKIP_INSPECTION" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -101,6 +107,9 @@
     &quot;Gradle.test_native_build [nativeBinaries].executor&quot;: &quot;Run&quot;,
     &quot;Gradle.构建 test_native_build.executor&quot;: &quot;Run&quot;,
     &quot;Kotlin 脚本(测试版).build.gradle.kts.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.DebugDevKt.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.DriverKt.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.FunctionInterpretationsKt.executor&quot;: &quot;Debug&quot;,
     &quot;Kotlin.MainKt (1).executor&quot;: &quot;Run&quot;,
     &quot;Kotlin.MainKt.executor&quot;: &quot;Run&quot;,
     &quot;Kotlin.TestJavaParserKt.executor&quot;: &quot;Run&quot;,
@@ -109,8 +118,14 @@
     &quot;git-widget-placeholder&quot;: &quot;soot-parse-smtlib&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/learning/jconcolic&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.kotlinCompiler&quot;
+    &quot;last_opened_file_path&quot;: &quot;D:/learning/joana&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.language.Kotlin&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件&quot;: [
+      &quot;kotlin&quot;
+    ]
   }
 }</component>
   <component name="RecentsManager">
@@ -119,55 +134,32 @@
       <recent name="D:\IdeaProjects\test_native_build\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Kotlin.MainKt">
-    <configuration name="test_native_build [linkNative]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="linkNative" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>false</RunAsTest>
-      <method v="2" />
+  <component name="RunManager" selected="Kotlin.DriverKt">
+    <configuration name="DebugDevKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="DebugDevKt" />
+      <module name="IdeaProjects.test_native_build.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
-    <configuration name="test_native_build [nativeBinaries]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="nativeBinaries" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>false</RunAsTest>
-      <method v="2" />
+    <configuration name="DriverKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="DriverKt" />
+      <module name="IdeaProjects.test_native_build.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FunctionInterpretationsKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="FunctionInterpretationsKt" />
+      <module name="IdeaProjects.test_native_build.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="MainKt" type="JetRunConfigurationType" temporary="true">
       <option name="MAIN_CLASS_NAME" value="MainKt" />
       <module name="IdeaProjects.test_native_build.main" />
-      <option name="PROGRAM_PARAMETERS" value="C:\Users\yyzha\Desktop\lucene-9.9.1\lucene-9.9.1\modules\lucene-analysis-icu-9.9.1.jar" />
+      <option name="PROGRAM_PARAMETERS" value="C:\Users\yyzha\Desktop\jars\choco" />
       <shortenClasspath name="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -181,26 +173,21 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Gradle.test_native_build [linkNative]" />
-      <item itemvalue="Gradle.test_native_build [nativeBinaries]" />
+      <item itemvalue="Kotlin.FunctionInterpretationsKt" />
+      <item itemvalue="Kotlin.DebugDevKt" />
+      <item itemvalue="Kotlin.DriverKt" />
       <item itemvalue="Kotlin.MainKt" />
       <item itemvalue="Kotlin.TestJavaParserKt" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Kotlin.DriverKt" />
+        <item itemvalue="Kotlin.FunctionInterpretationsKt" />
         <item itemvalue="Kotlin.MainKt" />
+        <item itemvalue="Kotlin.DebugDevKt" />
         <item itemvalue="Kotlin.TestJavaParserKt" />
-        <item itemvalue="Gradle.test_native_build [nativeBinaries]" />
-        <item itemvalue="Gradle.test_native_build [linkNative]" />
       </list>
     </recent_temporary>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="jdk-1.8.0_402-corretto-1.8.0_402-9be69aac17ab-20b156bc" />
-      </set>
-    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -211,351 +198,399 @@
       <option name="presentableId" value="Default" />
       <updated>1703818996888</updated>
     </task>
-    <task id="LOCAL-00001" summary=".">
+    <task id="LOCAL-00073" summary="add: program initialization with base folder path">
       <option name="closed" value="true" />
-      <created>1704767498216</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
+      <created>1712476558655</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
       <option name="project" value="LOCAL" />
-      <updated>1704767498216</updated>
+      <updated>1712476558655</updated>
     </task>
-    <task id="LOCAL-00002" summary="some to-text updates">
+    <task id="LOCAL-00074" summary="fix: charsequence, constant and a coerce thing">
       <option name="closed" value="true" />
-      <created>1706183068980</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
+      <created>1712628615548</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
       <option name="project" value="LOCAL" />
-      <updated>1706183069002</updated>
+      <updated>1712628615548</updated>
     </task>
-    <task id="LOCAL-00003" summary="delete no-use funcs for this project">
+    <task id="LOCAL-00075" summary="fix: yet another fix for the &quot;java.reflect.Type&quot; and &quot;java.lang.Class&quot; mutual coerce problem">
       <option name="closed" value="true" />
-      <created>1706413325365</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
+      <created>1712644398246</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
       <option name="project" value="LOCAL" />
-      <updated>1706413325365</updated>
+      <updated>1712644398249</updated>
     </task>
-    <task id="LOCAL-00004" summary="delete no-use funcs for this project">
+    <task id="LOCAL-00076" summary="fix: implement bitwise operation logic correctly">
       <option name="closed" value="true" />
-      <created>1706413338543</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
+      <created>1712644462574</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
       <option name="project" value="LOCAL" />
-      <updated>1706413338543</updated>
+      <updated>1712644462574</updated>
     </task>
-    <task id="LOCAL-00005" summary="partially add smtlib things">
+    <task id="LOCAL-00077" summary="fix: make class object detection work again by adding &quot;java.lang.Class&quot; back to `publicSymbols`">
       <option name="closed" value="true" />
-      <created>1708932389712</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
+      <created>1712647042004</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
       <option name="project" value="LOCAL" />
-      <updated>1708932389712</updated>
+      <updated>1712647042004</updated>
     </task>
-    <task id="LOCAL-00006" summary="add support for some java bytecode transform, to be continued">
+    <task id="LOCAL-00078" summary="fix: make adding &quot;java.lang.Class&quot; back to `publicSymbols` work by removing duplicate declaration">
       <option name="closed" value="true" />
-      <created>1708940565155</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
+      <created>1712647879843</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
       <option name="project" value="LOCAL" />
-      <updated>1708940565155</updated>
+      <updated>1712647879843</updated>
     </task>
-    <task id="LOCAL-00007" summary="add support for some java bytecode transform to pass in one case">
+    <task id="LOCAL-00079" summary="fix: yet another fix for reflection (for a typo)">
       <option name="closed" value="true" />
-      <created>1708997517599</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
+      <created>1712648397311</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
       <option name="project" value="LOCAL" />
-      <updated>1708997517599</updated>
+      <updated>1712648397311</updated>
     </task>
-    <task id="LOCAL-00008" summary="add support for simple cast from int to boolean">
+    <task id="LOCAL-00080" summary="add: multi-array init expr">
       <option name="closed" value="true" />
-      <created>1709014243075</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
+      <created>1712725134395</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
       <option name="project" value="LOCAL" />
-      <updated>1709014243075</updated>
+      <updated>1712725134396</updated>
     </task>
-    <task id="LOCAL-00009" summary="add support for simple cast from int to boolean and array">
+    <task id="LOCAL-00081" summary="fix: customized type `ClassObject` fully init">
       <option name="closed" value="true" />
-      <created>1709014254057</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
+      <created>1712726249596</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
       <option name="project" value="LOCAL" />
-      <updated>1709014254057</updated>
+      <updated>1712726249596</updated>
     </task>
-    <task id="LOCAL-00010" summary="add support for simple cast from int to boolean and array">
+    <task id="LOCAL-00082" summary="fix: correct base type of multi-array and better logic of determining whether class object is involved">
       <option name="closed" value="true" />
-      <created>1709014273390</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
+      <created>1712809286527</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
       <option name="project" value="LOCAL" />
-      <updated>1709014273390</updated>
+      <updated>1712809286527</updated>
     </task>
-    <task id="LOCAL-00011" summary="add simple SSA for mutable variable re-definition">
+    <task id="LOCAL-00083" summary="add: catch-all for array type name conversion">
       <option name="closed" value="true" />
-      <created>1709015298926</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
+      <created>1713233118444</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
       <option name="project" value="LOCAL" />
-      <updated>1709015298926</updated>
+      <updated>1713233118444</updated>
     </task>
-    <task id="LOCAL-00012" summary="fix bugs in path finding">
+    <task id="LOCAL-00084" summary="add: later stub for refactoring">
       <option name="closed" value="true" />
-      <created>1709025736600</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
+      <created>1713233145011</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
       <option name="project" value="LOCAL" />
-      <updated>1709025736600</updated>
+      <updated>1713233145011</updated>
     </task>
-    <task id="LOCAL-00013" summary="add support for newExpr, coerce to higher type">
+    <task id="LOCAL-00085" summary="fix: should declare class object correctly (as opposed to double / zero showing ClassObject!class / varxxx!class)">
       <option name="closed" value="true" />
-      <created>1709083650475</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
+      <created>1713247431003</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
       <option name="project" value="LOCAL" />
-      <updated>1709083650475</updated>
+      <updated>1713247431003</updated>
     </task>
-    <task id="LOCAL-00014" summary="add support for newExpr, coerce to higher type">
+    <task id="LOCAL-00086" summary="refactor: make the method body also available when outputting files for exception-related information">
       <option name="closed" value="true" />
-      <created>1709083673325</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
+      <created>1713323308944</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
       <option name="project" value="LOCAL" />
-      <updated>1709083673325</updated>
+      <updated>1713323308944</updated>
     </task>
-    <task id="LOCAL-00015" summary="temporarily finish grammar fix and switch to semantic (method interpretation) work">
+    <task id="LOCAL-00087" summary="chore: clean up switch table">
       <option name="closed" value="true" />
-      <created>1709088275159</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
+      <created>1713336839045</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
       <option name="project" value="LOCAL" />
-      <updated>1709088275159</updated>
+      <updated>1713336839062</updated>
     </task>
-    <task id="LOCAL-00016" summary="refactor: delete non-smt-related functions">
+    <task id="LOCAL-00088" summary="refactor: create function for inlining array name in function name">
       <option name="closed" value="true" />
-      <created>1709089049741</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
+      <created>1713336958689</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
       <option name="project" value="LOCAL" />
-      <updated>1709089049741</updated>
+      <updated>1713336958689</updated>
     </task>
-    <task id="LOCAL-00017" summary="add: definition system, pre- and post- conditions, minor changes">
+    <task id="LOCAL-00089" summary="add: support more for general smt-lib format (compatible with cvc5)">
       <option name="closed" value="true" />
-      <created>1709261388044</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
+      <created>1713337027334</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
       <option name="project" value="LOCAL" />
-      <updated>1709261388044</updated>
+      <updated>1713337027334</updated>
     </task>
-    <task id="LOCAL-00018" summary="add: update base instances instead of adding new variables when fields and array members are updated (e.g. a[1] = 2)">
+    <task id="LOCAL-00090" summary="add: definition of cast-from-Int-to-Int (as a result of coercion of Java short, byte, int) and its peers">
       <option name="closed" value="true" />
-      <created>1709619089951</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
+      <created>1713408687814</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
       <option name="project" value="LOCAL" />
-      <updated>1709619089951</updated>
+      <updated>1713408687814</updated>
     </task>
-    <task id="LOCAL-00019" summary="add: update base instances instead of adding new variables when fields and array members are updated (e.g. a[1] = 2)">
+    <task id="LOCAL-00091" summary="add: post condition for instance invoke expr">
       <option name="closed" value="true" />
-      <created>1709619129069</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
+      <created>1713667455643</created>
+      <option name="number" value="00091" />
+      <option name="presentableId" value="LOCAL-00091" />
       <option name="project" value="LOCAL" />
-      <updated>1709619129069</updated>
+      <updated>1713667455669</updated>
     </task>
-    <task id="LOCAL-00020" summary="add: badly-written upcast stuff for invocation and field-ref arguments">
+    <task id="LOCAL-00092" summary="fix: try to resolve SList with `transformValue`">
       <option name="closed" value="true" />
-      <created>1709621479813</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
+      <created>1713667501329</created>
+      <option name="number" value="00092" />
+      <option name="presentableId" value="LOCAL-00092" />
       <option name="project" value="LOCAL" />
-      <updated>1709621479813</updated>
+      <updated>1713667501329</updated>
     </task>
-    <task id="LOCAL-00021" summary="refactor: collect multi-statement upcasts into a function">
+    <task id="LOCAL-00093" summary="add: support more string-related functions">
       <option name="closed" value="true" />
-      <created>1709622230754</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
+      <created>1713667575876</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
       <option name="project" value="LOCAL" />
-      <updated>1709622230754</updated>
+      <updated>1713667575876</updated>
     </task>
-    <task id="LOCAL-00022" summary="fix: registerFunctionAndUpcastArguments to accept param types in function signature">
+    <task id="LOCAL-00094" summary="add: solver test scripts (but with hard-coded paths)">
       <option name="closed" value="true" />
-      <created>1709713925916</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
+      <created>1713667692100</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
       <option name="project" value="LOCAL" />
-      <updated>1709713925916</updated>
+      <updated>1713667692100</updated>
     </task>
-    <task id="LOCAL-00023" summary="add: NewArrayExpr support and some simple array logic">
+    <task id="LOCAL-00095" summary="add: CharSequence related functions">
       <option name="closed" value="true" />
-      <created>1709713995773</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
+      <created>1714113416162</created>
+      <option name="number" value="00095" />
+      <option name="presentableId" value="LOCAL-00095" />
       <option name="project" value="LOCAL" />
-      <updated>1709713995773</updated>
+      <updated>1714113416162</updated>
     </task>
-    <task id="LOCAL-00024" summary="add: LengthOfExpr and draft version of DynamicInvokeExpr">
+    <task id="LOCAL-00096" summary="fix: multiple decl of &quot;*!class&quot; class objects">
       <option name="closed" value="true" />
-      <created>1709714070422</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
+      <created>1714291160245</created>
+      <option name="number" value="00096" />
+      <option name="presentableId" value="LOCAL-00096" />
       <option name="project" value="LOCAL" />
-      <updated>1709714070422</updated>
+      <updated>1714291160264</updated>
     </task>
-    <task id="LOCAL-00025" summary="fix: partial fix the upcast coerce conditions">
+    <task id="LOCAL-00097" summary="add: object wrapper of primitive types like java.lang.Integer">
       <option name="closed" value="true" />
-      <created>1709774734001</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
+      <created>1714291194308</created>
+      <option name="number" value="00097" />
+      <option name="presentableId" value="LOCAL-00097" />
       <option name="project" value="LOCAL" />
-      <updated>1709774734001</updated>
+      <updated>1714291194308</updated>
     </task>
-    <task id="LOCAL-00026" summary="add: make cast-able judgement as an independent function">
+    <task id="LOCAL-00098" summary="fix: null cast should work now as global null constant">
       <option name="closed" value="true" />
-      <created>1709787429288</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
+      <created>1714291293627</created>
+      <option name="number" value="00098" />
+      <option name="presentableId" value="LOCAL-00098" />
       <option name="project" value="LOCAL" />
-      <updated>1709787429288</updated>
+      <updated>1714291293627</updated>
     </task>
-    <task id="LOCAL-00027" summary="add: byte (java) type temporarily as int (smt) type">
+    <task id="LOCAL-00099" summary="add: function signatures from java.lang.Integer, java.lang.BufferReader">
       <option name="closed" value="true" />
-      <created>1709787454287</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
+      <created>1714368037603</created>
+      <option name="number" value="00099" />
+      <option name="presentableId" value="LOCAL-00099" />
       <option name="project" value="LOCAL" />
-      <updated>1709787454287</updated>
+      <updated>1714368037616</updated>
     </task>
-    <task id="LOCAL-00028" summary="fix: string concat something **as a string**">
+    <task id="LOCAL-00100" summary="add: various definitions, post-cond, and partial post-cond (for APIs like `append(java.lang.Object)`) for commonplace methods">
       <option name="closed" value="true" />
-      <created>1709788390937</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
+      <created>1714368253520</created>
+      <option name="number" value="00100" />
+      <option name="presentableId" value="LOCAL-00100" />
       <option name="project" value="LOCAL" />
-      <updated>1709788390937</updated>
+      <updated>1714368253520</updated>
     </task>
-    <task id="LOCAL-00029" summary="fix: string concat something **as a string**">
+    <task id="LOCAL-00101" summary="add: lazy (sequence) path generator">
       <option name="closed" value="true" />
-      <created>1709788859905</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
+      <created>1714443601357</created>
+      <option name="number" value="00101" />
+      <option name="presentableId" value="LOCAL-00101" />
       <option name="project" value="LOCAL" />
-      <updated>1709788859905</updated>
+      <updated>1714443601368</updated>
     </task>
-    <task id="LOCAL-00030" summary="fix: string concat something **as a string** and add: instanceof expression">
+    <task id="LOCAL-00102" summary="add: lazy (sequence) path generator">
       <option name="closed" value="true" />
-      <created>1709788940426</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
+      <created>1714443659289</created>
+      <option name="number" value="00102" />
+      <option name="presentableId" value="LOCAL-00102" />
       <option name="project" value="LOCAL" />
-      <updated>1709788940426</updated>
+      <updated>1714443659290</updated>
     </task>
-    <task id="LOCAL-00031" summary="refactor: offload predefined function selection to FunctionInterpretations.kt">
+    <task id="LOCAL-00103" summary="add: lazy (sequence) path generator and the lazy version of main loop-over function">
       <option name="closed" value="true" />
-      <created>1709952516173</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
+      <created>1714443705507</created>
+      <option name="number" value="00103" />
+      <option name="presentableId" value="LOCAL-00103" />
       <option name="project" value="LOCAL" />
-      <updated>1709952516173</updated>
+      <updated>1714443705507</updated>
     </task>
-    <task id="LOCAL-00032" summary="refactor: offload predefined function selection to FunctionInterpretations.kt">
+    <task id="LOCAL-00104" summary="add: special check string equals method as it is very common but needs thorough modeling object system if translated">
       <option name="closed" value="true" />
-      <created>1709954001428</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
+      <created>1714443805247</created>
+      <option name="number" value="00104" />
+      <option name="presentableId" value="LOCAL-00104" />
       <option name="project" value="LOCAL" />
-      <updated>1709954001428</updated>
+      <updated>1714443805247</updated>
     </task>
-    <task id="LOCAL-00033" summary="add: String.trim() function definition for ASCII strings, recursive with additional helper functions">
+    <task id="LOCAL-00105" summary="test: add cvc support">
       <option name="closed" value="true" />
-      <created>1709954056546</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
+      <created>1714443866614</created>
+      <option name="number" value="00105" />
+      <option name="presentableId" value="LOCAL-00105" />
       <option name="project" value="LOCAL" />
-      <updated>1709954056546</updated>
+      <updated>1714443866614</updated>
     </task>
-    <task id="LOCAL-00034" summary="reformat">
+    <task id="LOCAL-00106" summary="refactor: rewrite solver support as a loop in test file">
       <option name="closed" value="true" />
-      <created>1709954200759</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
+      <created>1714463644349</created>
+      <option name="number" value="00106" />
+      <option name="presentableId" value="LOCAL-00106" />
       <option name="project" value="LOCAL" />
-      <updated>1709954200759</updated>
+      <updated>1714463644349</updated>
     </task>
-    <task id="LOCAL-00035" summary="fix: InstanceOfExpr semantics should also return true when two types are the same">
+    <task id="LOCAL-00107" summary="add: inspect memory performance using `subprocess.Popen` instead of `run`, and print to file every 100 paths">
       <option name="closed" value="true" />
-      <created>1710035378154</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
+      <created>1714547292089</created>
+      <option name="number" value="00107" />
+      <option name="presentableId" value="LOCAL-00107" />
       <option name="project" value="LOCAL" />
-      <updated>1710035378154</updated>
+      <updated>1714547292112</updated>
     </task>
-    <task id="LOCAL-00036" summary="refactor: extract &quot;assert&quot; identifier to whole path inspection time">
+    <task id="LOCAL-00108" summary="fix: floating point and boolean related translations">
       <option name="closed" value="true" />
-      <created>1710041141371</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
+      <created>1716426756730</created>
+      <option name="number" value="00108" />
+      <option name="presentableId" value="LOCAL-00108" />
       <option name="project" value="LOCAL" />
-      <updated>1710041141371</updated>
+      <updated>1716426756730</updated>
     </task>
-    <task id="LOCAL-00037" summary="add: produce the paths according to negation of inline pre-conditions as well">
+    <task id="LOCAL-00109" summary="fix: recursive check array">
       <option name="closed" value="true" />
-      <created>1710041239470</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
+      <created>1716426795920</created>
+      <option name="number" value="00109" />
+      <option name="presentableId" value="LOCAL-00109" />
       <option name="project" value="LOCAL" />
-      <updated>1710041239470</updated>
+      <updated>1716426795920</updated>
     </task>
-    <task id="LOCAL-00038" summary="add: produce the paths according to negation of inline pre-conditions as well">
+    <task id="LOCAL-00110" summary="fix: negexpr check">
       <option name="closed" value="true" />
-      <created>1710041766049</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
+      <created>1716427437008</created>
+      <option name="number" value="00110" />
+      <option name="presentableId" value="LOCAL-00110" />
       <option name="project" value="LOCAL" />
-      <updated>1710041766049</updated>
+      <updated>1716427437008</updated>
     </task>
-    <task id="LOCAL-00039" summary="fix: re-add the (assign *) structure to preconditions of deviant paths">
+    <task id="LOCAL-00111" summary="refactor: some workarounds">
       <option name="closed" value="true" />
-      <created>1710145714020</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
+      <created>1718269298396</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
       <option name="project" value="LOCAL" />
-      <updated>1710145714020</updated>
+      <updated>1718269298396</updated>
     </task>
-    <task id="LOCAL-00040" summary="add: post condition for Iterator.next() interface method">
+    <task id="LOCAL-00112" summary="test: change to accurate timeout, add solvers">
       <option name="closed" value="true" />
-      <created>1710214656733</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
+      <created>1718269403010</created>
+      <option name="number" value="00112" />
+      <option name="presentableId" value="LOCAL-00112" />
       <option name="project" value="LOCAL" />
-      <updated>1710214656733</updated>
+      <updated>1718269403010</updated>
     </task>
-    <task id="LOCAL-00041" summary="refactor: use an inner class as a wrapper of methods (to let the methods get reach to each other later)">
+    <task id="LOCAL-00113" summary="test: change to accurate timeout, add solvers">
       <option name="closed" value="true" />
-      <created>1710221130249</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
+      <created>1718269518014</created>
+      <option name="number" value="00113" />
+      <option name="presentableId" value="LOCAL-00113" />
       <option name="project" value="LOCAL" />
-      <updated>1710221130249</updated>
+      <updated>1718269518014</updated>
     </task>
-    <task id="LOCAL-00042" summary="refactor: merge the `coerce` and `coerceInitializer` local functions to be a object method">
+    <task id="LOCAL-00114" summary="fix the graph traverse for multi-predecessor case">
       <option name="closed" value="true" />
-      <created>1710225958744</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
+      <created>1725346907868</created>
+      <option name="number" value="00114" />
+      <option name="presentableId" value="LOCAL-00114" />
       <option name="project" value="LOCAL" />
-      <updated>1710225958744</updated>
+      <updated>1725346907868</updated>
     </task>
-    <task id="LOCAL-00043" summary="add: batch syntactic error detection script">
+    <task id="LOCAL-00115" summary="add: bump soot version and add regex parse">
       <option name="closed" value="true" />
-      <created>1710227419512</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
+      <created>1725440890823</created>
+      <option name="number" value="00115" />
+      <option name="presentableId" value="LOCAL-00115" />
       <option name="project" value="LOCAL" />
-      <updated>1710227419512</updated>
+      <updated>1725440890824</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00116" summary="add: regex related and some other functions">
+      <option name="closed" value="true" />
+      <created>1725859633381</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1725859633382</updated>
+    </task>
+    <task id="LOCAL-00117" summary="fix: fp.rem, the type of `equalsIgnoreCase`, and upcast check">
+      <option name="closed" value="true" />
+      <created>1725867104199</created>
+      <option name="number" value="00117" />
+      <option name="presentableId" value="LOCAL-00117" />
+      <option name="project" value="LOCAL" />
+      <updated>1725867104199</updated>
+    </task>
+    <task id="LOCAL-00118" summary="add: driver, aka the ultimate entry point, without the hard-encoded local path">
+      <option name="closed" value="true" />
+      <created>1726038709189</created>
+      <option name="number" value="00118" />
+      <option name="presentableId" value="LOCAL-00118" />
+      <option name="project" value="LOCAL" />
+      <updated>1726038709189</updated>
+    </task>
+    <task id="LOCAL-00119" summary="refactor: various formatting changes and small incompatibilities with SMT-LIB format, but mostly the refactor of function interpretation list to enable checking how many functions are supported">
+      <option name="closed" value="true" />
+      <created>1726039000624</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1726039000624</updated>
+    </task>
+    <task id="LOCAL-00120" summary="path limit, remove deviants">
+      <option name="closed" value="true" />
+      <created>1726123017836</created>
+      <option name="number" value="00120" />
+      <option name="presentableId" value="LOCAL-00120" />
+      <option name="project" value="LOCAL" />
+      <updated>1726123017836</updated>
+    </task>
+    <task id="LOCAL-00121" summary="fix: uncatched exception check and various refactors and fixes">
+      <option name="closed" value="true" />
+      <created>1727353275694</created>
+      <option name="number" value="00121" />
+      <option name="presentableId" value="LOCAL-00121" />
+      <option name="project" value="LOCAL" />
+      <updated>1727353275694</updated>
+    </task>
+    <option name="localTasksCounter" value="122" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -582,55 +617,111 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="add: definition system, pre- and post- conditions, minor changes" />
-    <MESSAGE value="add: update base instances instead of adding new variables when fields and array members are updated (e.g. a[1] = 2)" />
-    <MESSAGE value="add: badly-written upcast stuff for invocation and field-ref arguments" />
-    <MESSAGE value="refactor: collect multi-statement upcasts into a function" />
-    <MESSAGE value="fix: registerFunctionAndUpcastArguments to accept param types in function signature" />
-    <MESSAGE value="add: NewArrayExpr support and some simple array logic" />
-    <MESSAGE value="add: LengthOfExpr and draft version of DynamicInvokeExpr" />
-    <MESSAGE value="fix: partial fix the upcast coerce conditions" />
-    <MESSAGE value="add: make cast-able judgement as an independent function" />
-    <MESSAGE value="add: byte (java) type temporarily as int (smt) type" />
-    <MESSAGE value="add: instanceof expression as cast-able judgement" />
-    <MESSAGE value="fix: string concat something **as a string** and as" />
-    <MESSAGE value="fix: string concat something **as a string**" />
-    <MESSAGE value="fix: string concat something **as a string** and add: instanceof expression" />
-    <MESSAGE value="refactor: offload predefined function selection to FunctionInterpretations.kt" />
-    <MESSAGE value="add: String.trim() function definition for ASCII strings, recursive with additional helper functions" />
-    <MESSAGE value="reformat" />
-    <MESSAGE value="fix: InstanceOfExpr semantics should also return true when two types are the same" />
-    <MESSAGE value="refactor: extract &quot;assert&quot; identifier to whole path inspection time" />
-    <MESSAGE value="add: produce the paths according to negation of inline pre-conditions as well" />
-    <MESSAGE value="fix: re-add the (assign *) structure to preconditions of deviant paths" />
-    <MESSAGE value="add: post condition for Iterator.next() interface method" />
-    <MESSAGE value="refactor: use an inner class as a wrapper of methods (to let the methods get reach to each other later)" />
-    <MESSAGE value="refactor: merge the `coerce` and `coerceInitializer` local functions to be a object method" />
-    <MESSAGE value="add: batch syntactic error detection script" />
-    <option name="LAST_COMMIT_MESSAGE" value="add: batch syntactic error detection script" />
+    <MESSAGE value="add: CharSequence related functions" />
+    <MESSAGE value="fix: multiple decl of &quot;*!class&quot; class objects" />
+    <MESSAGE value="add: object wrapper of primitive types like java.lang.Integer" />
+    <MESSAGE value="fix: null cast should work now as global null constant" />
+    <MESSAGE value="add: function signatures from java.lang.Integer, java.lang.BufferReader" />
+    <MESSAGE value="add: various definitions, post-cond, and partial post-cond (for APIs like `append(java.lang.Object)`) for commonplace methods" />
+    <MESSAGE value="add: lazy (sequence) path generator" />
+    <MESSAGE value="add: lazy (sequence) path generator and the lazy version of main loop-over function" />
+    <MESSAGE value="add: special check string equals method as it is very common but needs thorough modeling object system if translated" />
+    <MESSAGE value="test: add cvc support" />
+    <MESSAGE value="refactor: rewrite solver support as a loop in test file" />
+    <MESSAGE value="add: inspect memory performance using `subprocess.Popen` instead of `run`, and print to file every 100 paths" />
+    <MESSAGE value="fix: floating point and boolean related translations" />
+    <MESSAGE value="fix: recursive check array" />
+    <MESSAGE value="fix: negexpr check" />
+    <MESSAGE value="refactor: some workarounds" />
+    <MESSAGE value="test: change to accurate timeout, add solvers" />
+    <MESSAGE value="fix the graph traverse for multi-predecessor case" />
+    <MESSAGE value="add: bump soot version and add regex parse" />
+    <MESSAGE value="add: regex related and some other functions" />
+    <MESSAGE value="fix: fp.rem, the type of `equalsIgnoreCase`, and upcast check" />
+    <MESSAGE value="add: driver, aka the ultimate entry point, without the hard-encoded local path" />
+    <MESSAGE value="refactor: various formatting changes and small incompatibilities with SMT-LIB format, but mostly the refactor of function interpretation list to enable checking how many functions are supported" />
+    <MESSAGE value="path limit, remove deviants" />
+    <MESSAGE value="fix: uncatched exception check and various refactors and fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: uncatched exception check and various refactors and fixes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint type="kotlin-line">
-          <condition expression="pathsOfFunc.toString().contains(&quot;getBreakI&quot;)" language="kotlin" />
+          <condition expression="pathsOfFunc.key.contains(&quot;runLauncher&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/Main.kt</url>
-          <line>10</line>
+          <line>19</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint type="kotlin-line">
           <condition expression="b.method.name.toString().contains(&quot;getBreakI&quot;) &amp;&amp; b.method.declaringClass.name.contains(&quot;Composite&quot;)" language="kotlin" mode="CODE_FRAGMENT" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/Main.kt</url>
-          <line>43</line>
+          <line>78</line>
           <option name="timeStamp" value="24" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
-          <line>227</line>
+          <line>277</line>
           <properties>
             <option name="lambda-ordinal" value="-1" />
           </properties>
           <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <condition expression="valueToBeCoerced.type.toString().contains(&quot;SootClassMemberSignature&quot;)" language="kotlin" />
+          <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
+          <line>111</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint type="kotlin-line">
+          <condition expression="typeToCoerce.toString().contains(&quot;ConfigurationError&quot;) || valueToBeCoerced.type.toString().contains(&quot;Enum&quot;)" language="kotlin" />
+          <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
+          <line>116</line>
+          <option name="timeStamp" value="48" />
+        </line-breakpoint>
+        <line-breakpoint type="kotlin-line">
+          <condition expression="next.head is IdentityStmt &amp;&amp; (next.head as IdentityStmt).rightOp is CaughtExceptionRef" language="kotlin" />
+          <url>file://$PROJECT_DIR$/src/main/kotlin/PathCollection.kt</url>
+          <line>129</line>
+          <option name="timeStamp" value="87" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <condition expression="value.toString().contains(&quot;E&quot;)" language="kotlin" />
+          <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
+          <line>330</line>
+          <option name="timeStamp" value="93" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <condition expression="value.toString().contains(&quot;neg \$d4&quot;)" language="kotlin" />
+          <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
+          <line>349</line>
+          <option name="timeStamp" value="95" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <condition expression="pattern.toString().contains(&quot;4e00&quot;)" language="kotlin" />
+          <url>file://$PROJECT_DIR$/src/main/kotlin/FunctionInterpretations.kt</url>
+          <line>2984</line>
+          <option name="timeStamp" value="106" />
+        </line-breakpoint>
+        <line-breakpoint type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/kotlin/FunctionInterpretations.kt</url>
+          <line>3039</line>
+          <option name="timeStamp" value="108" />
+        </line-breakpoint>
+        <line-breakpoint type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/kotlin/FunctionInterpretations.kt</url>
+          <line>3065</line>
+          <option name="timeStamp" value="109" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/kotlin/PathCollection.kt</url>
+          <line>122</line>
+          <option name="timeStamp" value="111" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
+          <line>480</line>
+          <option name="timeStamp" value="122" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

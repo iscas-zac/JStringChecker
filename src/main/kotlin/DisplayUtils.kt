@@ -237,8 +237,8 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     val argNames = (listOf(value.base) + value.args).map { transformValue(it) }
                     val preCond =
                         preconditionOfFunctions(funcName, argNames)
-                    val checkBaseNullity =
-                        "(not (= ${transformValue(value.base)} ${coerce(NullConstant.v(), listOf(value.base.type))}))"
+                    val checkBaseNullity = "true"
+//                        "(not (= ${transformValue(value.base)} ${coerce(NullConstant.v(), listOf(value.base.type))}))"
                     pre = if (preCond != null) {
                         // TODO: check the statement if it includes essential checks, including function exception and null check
                         // and plug to some of exprs above
