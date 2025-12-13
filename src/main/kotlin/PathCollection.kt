@@ -1,4 +1,3 @@
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringType
 import soot.*
 import soot.jimple.*
 import soot.jimple.internal.JEqExpr
@@ -34,7 +33,7 @@ fun pathYielder(cfg: BlockGraph): Sequence<Set<List<Block>>> {
             growingPaths =
                 growingPaths.map { p ->
                     items.map { block ->
-                        if (block == p.firstOrNull()) cfg.getSuccsOf(block).map { listOf(it) + p } else listOf()
+                         if (block == p.firstOrNull()) cfg.getSuccsOf(block).map { listOf(it) + p } else listOf()
                     }.flatten()
                 }.flatten().toSet()
             growingPaths.filter { cfg.tails.contains(it.first()) }.toSet()
