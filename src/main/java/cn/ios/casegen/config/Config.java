@@ -24,7 +24,7 @@ public class Config {
 			GlobalCons.LOCAL_JRE_PATH = jrePath.endsWith(File.separator)? jrePath.substring(0,jrePath.length()-1) : jrePath;
 		}
 		if (outputPath != null && !outputPath.isEmpty()) {
-			GlobalCons.TEST_OUTPUT_FOLDER = outputPath + File.separator + "justinStr-result" + File.separator + "test";
+			GlobalCons.TEST_OUTPUT_FOLDER = outputPath + File.separator + "justinStr-result" + File.separator + "extension";
 			GlobalCons.REPORT_OUTPUT_FOLDER = outputPath + File.separator + "justinStr-result" + File.separator + "report";
 			GlobalCons.TEST_COMPILE_TEMP_FOLDER = outputPath + File.separator + "justinStr-result" + File.separator + "compile-temp";
 			GlobalCons.DB_PATH = outputPath + File.separator + "justinStr-result" + File.separator + "report" + File.separator + "report.db";

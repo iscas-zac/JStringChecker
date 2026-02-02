@@ -1,4 +1,4 @@
-package test;
+package extension;
 
 import soot.Unit;
 

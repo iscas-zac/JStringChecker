@@ -111,14 +111,14 @@ public class GenConstraints {
                     if (rightValue instanceof Constant) {
                         paramConstraintInfo.setCompareValue(rightValue.toString());
                         if (leftValue instanceof Local) {
-                            Trace.traceLocal(unitGraph, unit, (Local) leftValue, paramConstraintInfo, Maps.newHashMap(),
-                                    TraceTypeEnum.IfStmt, -1);
+//                            Trace.traceLocal(unitGraph, unit, (Local) leftValue, paramConstraintInfo, Maps.newHashMap(),
+//                                    TraceTypeEnum.IfStmt, -1);
                         }
                     } else if (leftValue instanceof Constant) {
                         paramConstraintInfo.setCompareValue(leftValue.toString());
                         if (rightValue instanceof Local) {
-                            Trace.traceLocal(unitGraph, unit, (Local) rightValue, paramConstraintInfo, Maps.newHashMap(),
-                                    TraceTypeEnum.IfStmt, -1);
+//                            Trace.traceLocal(unitGraph, unit, (Local) rightValue, paramConstraintInfo, Maps.newHashMap(),
+//                                    TraceTypeEnum.IfStmt, -1);
                         }
                     }
                 }
@@ -126,7 +126,7 @@ public class GenConstraints {
                 // for : return str.contains("s")
                 Value returnValue = ((ReturnStmt) unit).getOp();
                 if (returnValue instanceof Local) {
-                    Trace.traceLocal(unitGraph, unit, (Local) returnValue, paramConstraintInfo, Maps.newHashMap(), TraceTypeEnum.ReturnStmt, -1);
+//                    Trace.traceLocal(unitGraph, unit, (Local) returnValue, paramConstraintInfo, Maps.newHashMap(), TraceTypeEnum.ReturnStmt, -1);
                 }
             }
 

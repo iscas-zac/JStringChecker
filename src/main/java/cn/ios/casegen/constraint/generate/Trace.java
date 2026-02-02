@@ -7,18 +7,23 @@ import cn.ios.casegen.enums.TraceTypeEnum;
 import cn.ios.casegen.util.ListUtil;
 import cn.ios.casegen.util.TypeUtil;
 import com.google.common.collect.Lists;
+import extension.SimpleUnitGraph;
 import soot.Local;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.jimple.*;
 import soot.shimple.PhiExpr;
+import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.scalar.SimpleLocalDefs;
 import soot.toolkits.scalar.ValueUnitPair;
+import extension.FastTraceLocalDefs;
 
 import java.util.List;
 import java.util.Map;
+
+import static extension.FindLastRefKt.findLastDef;
 
 /**
  * @description: TODO
@@ -28,7 +33,7 @@ import java.util.Map;
 
 public class Trace {
 
-    public static void traceLocal(UnitGraph unitGraph, Unit unit, Local localTemp,
+    public static void traceLocal(List<soot.Unit> unitGraph, Unit unit, Local localTemp,
                                   ParamConstraintDTO paramConstraintDTO, Map<String, Integer> visited, TraceTypeEnum type, int index) {
 		String sig = getHashString(unit, localTemp, type, index);
 		if (!visited.containsKey(sig)) {
@@ -42,20 +47,18 @@ public class Trace {
         }
 
 
-        List<Unit> defsOfOps = new SimpleLocalDefs(unitGraph).getDefsOfAt(localTemp, unit);
-        // 在shimpleBody中，defsOfOps = 1
-        if (defsOfOps.size() == 1) {
-            Unit defOfLocal = defsOfOps.get(0);
-            if (defOfLocal.equals(unit)) {
-                return;
-            }
-            if (defOfLocal instanceof DefinitionStmt) {
-                dealDefineStmt(unitGraph, (DefinitionStmt) defOfLocal, paramConstraintDTO, visited);
-            }
+        Unit defOfLocal = findLastDef(unitGraph, localTemp, unit);
+        if (defOfLocal == null) return;
+        if (defOfLocal.equals(unit)) {
+            return;
         }
+        if (defOfLocal instanceof DefinitionStmt) {
+            dealDefineStmt(unitGraph, (DefinitionStmt) defOfLocal, paramConstraintDTO, visited);
+        }
+
     }
 
-    private static void dealDefineStmt(UnitGraph unitGraph, DefinitionStmt definitionStmt,
+    private static void dealDefineStmt(List<soot.Unit> unitGraph, DefinitionStmt definitionStmt,
                                        ParamConstraintDTO paramConstraintDTO, Map<String, Integer> visited) {
         Value rightValue = definitionStmt.getRightOp();
         if (rightValue instanceof ParameterRef) {
@@ -183,7 +186,7 @@ public class Trace {
         }
     }
 
-    private static void dealBinopExpr(BinopExpr expr, UnitGraph unitGraph, Unit unit,
+    private static void dealBinopExpr(BinopExpr expr, List<soot.Unit> unitGraph, Unit unit,
                                       ParamConstraintDTO paramConstraintDTO, Map<String, Integer> visited) {
         /**
          * JCmpExpr : long 比较大小 JCmpgExpr: float double: f > 35.0 JCmplExpr: float
@@ -207,7 +210,7 @@ public class Trace {
 
     }
 
-    private static void dealMethodArgs(List<Value> methodArgs, UnitGraph unitGraph, Unit unit,
+    private static void dealMethodArgs(List<Value> methodArgs, List<soot.Unit> unitGraph, Unit unit,
                                        ParamConstraintDTO paramConstraintDTO, Map<String, Integer> visited) {
         for (int i = 0; i < methodArgs.size(); i++) {
             Value methodArg = methodArgs.get(i);

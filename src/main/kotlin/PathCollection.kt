@@ -266,3 +266,46 @@ fun main() { // test use
     }))
     PackManager.v().runPacks()
 }
+
+fun summarizePath(path: List<soot.Unit>): String {
+    val sb = StringBuilder()
+    for (i in path.indices) {
+        val u = path[i]
+        val type: String = u.javaClass.name.removePrefix("soot.jimple.internal.J")
+        var entry = ""
+        val s = u as Stmt
+        if (s is IfStmt) {
+            val next = if (i + 1 < path.size) path[i + 1] else null
+            val ifs: IfStmt = s
+            // If: 1 表示 taken（跳转到 target），0 表示 not-taken（顺序执行）
+            val branchNum = if (next != null && next === ifs.target) "1" else "0"
+            entry = "$type:$branchNum"
+        } else if (s is LookupSwitchStmt) {
+            val next = if (i + 1 < path.size) path[i + 1] else null
+            val targets = s.targets
+            var matchedIndex = -1
+            for (t in targets.indices) {
+                if (targets[t] === next) {
+                    matchedIndex = t
+                    break
+                }
+            }
+            // matchedIndex stays -1 for default or no-match
+            entry = "$type:$matchedIndex"
+        } else if (s is TableSwitchStmt) {
+            val next = if (i + 1 < path.size) path[i + 1] else null
+            val targets: List<soot.Unit> = s.targets
+            var matchedIndex = -1
+            for (t in targets.indices) {
+                if (targets[t] === next) {
+                    matchedIndex = t
+                    break
+                }
+            }
+            entry = "$type:$matchedIndex"
+        }
+        if (sb.isNotEmpty() && !sb.endsWith(";")) sb.append(";")
+        sb.append(entry)
+    }
+    return sb.toString()
+}

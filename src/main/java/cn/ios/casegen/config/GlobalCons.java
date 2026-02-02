@@ -43,7 +43,7 @@ public class GlobalCons {
     public static int TEST_CLASS_NUM = 0;
     public static int ALREADY_DEAL_CLASS_NUM = 0;
 
-    public static int MAX_TIME_PER_CLASS = 15;
+    public static int MAX_TIME_PER_CLASS = 60;
     public static int MAX_UNIT_METHOD = 5;
     public static int ARRAY_MIN_SIZE = 0;
     public static int ARRAY_MAX_SIZE = 5;

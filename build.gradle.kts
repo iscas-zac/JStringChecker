@@ -1,9 +1,24 @@
 plugins {
     kotlin("jvm") version "1.9.22"
+    application
 }
 
 repositories {
     mavenCentral()
+}
+
+application {
+    mainClass.set("JustinWrapperKt")
+}
+
+tasks.jar.configure {
+    manifest {
+        attributes(mapOf("Main-Class" to "DriverKt"))
+    }
+    configurations["compileClasspath"].forEach { file: File ->
+        from(zipTree(file.absoluteFile))
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 dependencies {

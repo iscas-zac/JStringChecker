@@ -104,6 +104,7 @@ public class GenerationFactory {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(GlobalCons.TEST_COMPILE_TEMP_FOLDER);
     }
 
     private static boolean compileEachClass(JUnitClass jUnitClass){
@@ -203,24 +204,33 @@ public class GenerationFactory {
 
             JUnitCore jUnitCore = new JUnitCore();
             ExecutorService executorService = Executors.newFixedThreadPool(1);
-            Class<?> finalTestClass = testClass;
-            Callable<Result> callable = new Callable<Result>() {
-                @Override
-                public Result call() throws Exception {
-                    File file = new File(outFileName);
-                    if (!file.exists()) {
-                        file.createNewFile();
+            try {
+                Class<?> finalTestClass = testClass;
+                Callable<Result> callable = new Callable<Result>() {
+                    @Override
+                    public Result call() throws Exception {
+                        File file = new File(outFileName);
+                        if (!file.exists()) {
+                            file.createNewFile();
+                        }
+                        System.setErr(new PrintStream(outFileName));
+                        System.setOut(new PrintStream(outFileName));
+                        Result runResult = jUnitCore.run(finalTestClass);
+                        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+                        System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+                        return runResult;
                     }
-                    System.setErr(new PrintStream(outFileName));
-                    System.setOut(new PrintStream(outFileName));
-                    Result runResult = jUnitCore.run(finalTestClass);
-                    System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
-                    System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.out)));
-                    return runResult;
+                };
+                Future<Result> submit = executorService.submit(callable);
+                try {
+                    runResult = submit.get(30, TimeUnit.SECONDS);
+                } catch (TimeoutException e) {
+                    System.out.println("timeout " + testClassName);
+                    submit.cancel(true);
                 }
-            };
-            Future<Result> submit = executorService.submit(callable);
-            runResult = submit.get(30, TimeUnit.SECONDS);
+            } finally {
+                executorService.shutdownNow();
+            }
 
             // ---start: insert into class_info;
             String fullClassName = jUnitClass.getClazzUnderAnalysis().getName();

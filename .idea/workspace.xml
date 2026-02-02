@@ -4,99 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="af8a0f01-479c-4506-821d-141e3f1f6767" name="更改" comment="various updates, mainly adapt to the paper release.">
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/kotlin-statistics.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/API.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/config/Config.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/config/GlobalCons.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/ConstraintFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/DTO/MethodCallDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/DTO/ParamConstraintDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/DTO/PossibleParamValueDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/DTO/SimpleMethodCallDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/VO/MemberFieldVO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/VO/MethodCallInOneParam.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/VO/ParamConstraintVO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/generate/GenConstraints.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/generate/GenMemberFieldInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/generate/GenRegex.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/generate/Trace.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/enums/ComplexStringAPIEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/enums/GenerationEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/enums/PrimTypeEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/enums/SimpleStringAPIEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/enums/StringTypeEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/enums/TraceTypeEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/JUExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/JUExprFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/JUDefineExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/JUConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/array/JUArrayConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/prim/JUBooleanConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/prim/JUByteConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/prim/JUCharConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/prim/JUDoubleConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/prim/JUFloatConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/prim/JUIntConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/prim/JULongConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/prim/JUShortConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/constant/string/JUStringConstantExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/newexpr/JUNewExprImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/define/newexpr/util/ConstructorUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/invoke/JUInvokeExpr.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/invoke/impl/JUDynamicInvokeExprImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/expr/invoke/impl/JUStaticInvokeExprImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/generator/GenerationFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/generator/JUnitClass.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/generator/JUnitMethod.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/output/ErrorWriter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/output/JUnitWriter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/stmt/JUStmt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/stmt/JUStmtFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/stmt/impl/JUDefinitionStmt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/stmt/impl/JUInvokeStmt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/BaseUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/ClassUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/FileUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/ListUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/StringUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/TypeUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/deprecated/ConstraintUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/deprecated/JarClassLoader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/log/Log.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/random/MagicValues.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/random/MersenneTwister.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/util/random/RandomUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/variable/FullClassType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/variable/JUVariable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/variable/JUVariableFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/zother/diff/Compare.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/zother/diff/Compare2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/zother/diff/DiffGUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/zother/diff/MyButtonEditor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/zother/diff/UNZip.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/zother/path/CallSequence.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/zother/path/ConstraintsFromPath.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/cmd/ProgressBar.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/plugin/ui/ConfigGui.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/report/ReportFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/report/service/SaveInfoService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/report/service/SearchService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/ios/report/vo/ClassInfoVO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/test/EnhancedCFGPathExtractor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/test/PathInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/test/PathMethodWrapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/JpfConfigGenerator.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/JustinWrapper.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="af8a0f01-479c-4506-821d-141e3f1f6767" name="更改" comment="merging justin-str">
+      <change afterPath="$PROJECT_DIR$/src/main/java/extension/FastTraceLocalDefs.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/extension/SimpleUnitGraph.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/extension/findLastRef.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/config/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/config/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/config/GlobalCons.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/config/GlobalCons.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/generate/GenConstraints.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/generate/GenConstraints.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/generate/Trace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/constraint/generate/Trace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/generator/GenerationFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/ios/casegen/generator/GenerationFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test/EnhancedCFGPathExtractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/extension/EnhancedCFGPathExtractor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test/PathInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/extension/PathInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test/PathMethodWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/extension/PathMethodWrapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/Driver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/Driver.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/JustinWrapper.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/JustinWrapper.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/Main.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/PathCollection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/PathCollection.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -133,6 +58,12 @@
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="build" type="c8890929:TasksNode$1" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="test_native_build" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="other" type="c8890929:TasksNode$1" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -143,9 +74,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Class" />
         <option value="Kotlin Class" />
         <option value="Kotlin File" />
-        <option value="Class" />
       </list>
     </option>
   </component>
@@ -173,7 +104,7 @@
     &quot;accountId&quot;: &quot;30c463b8-5061-47c4-a844-e1f3ef3b406f&quot;
   }
 }</component>
-  <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="D:\Programs\Scoop\apps\gradle\current\.gradle\wrapper\dists\gradle-8.4-bin\1w5dpkrfk8irigvoxmyhowfim\gradle-8.4" javaHome="C:\Program Files\Eclipse Adoptium\jdk-8.0.345.1-hotspot" gradleVersion="8.4">
+  <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="D:\Programs\Scoop\apps\gradle\current\.gradle\wrapper\dists\gradle-8.4-bin\1w5dpkrfk8irigvoxmyhowfim\gradle-8.4" javaHome="C:\Users\yyzha\.jdks\corretto-11.0.22" gradleVersion="8.4">
     <option name="jvmArguments">
       <list>
         <option value="-Dhttp.proxyHost=127.0.0.1" />
@@ -194,42 +125,49 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build test_native_build.executor": "Run",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.test_native_build [:DriverKt.main()].executor": "Run",
-    "Gradle.test_native_build [:JustinWrapperKt.main()].executor": "Debug",
-    "Gradle.test_native_build [linkNative].executor": "Run",
-    "Gradle.test_native_build [nativeBinaries].executor": "Run",
-    "Gradle.构建 test_native_build.executor": "Run",
-    "Kotlin 脚本(测试版).build.gradle.kts.executor": "Run",
-    "Kotlin.DebugDevKt.executor": "Run",
-    "Kotlin.DriverKt.executor": "Run",
-    "Kotlin.FunctionInterpretationsKt.executor": "Debug",
-    "Kotlin.MainKt (1).executor": "Run",
-    "Kotlin.MainKt.executor": "Run",
-    "Kotlin.TestJavaParserKt.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "justin__side__by__side",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/IdeaProjects/test_native_build/src/main/java/test",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.35708228",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.language.Kotlin"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build test_native_build.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.test_native_build [:DriverKt.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.test_native_build [:JustinWrapperKt.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.test_native_build [jar].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.test_native_build [linkNative].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.test_native_build [nativeBinaries].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.构建 test_native_build.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin 脚本(测试版).build.gradle.kts.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.DebugDevKt.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.DriverKt.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.FunctionInterpretationsKt.executor&quot;: &quot;Debug&quot;,
+    &quot;Kotlin.MainKt (1).executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.MainKt.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.TestJavaParserKt.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;justin__side__by__side&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/IdeaProjects/test_native_build/src/main/java/test&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.35708228&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件": [
-      "kotlin"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件&quot;: [
+      &quot;kotlin&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\IdeaProjects\test_native_build\src\main\java\test" />
@@ -239,24 +177,38 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\IdeaProjects\test_native_build\src\main\java" />
     </key>
+    <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
+      <recent name="test" />
+    </key>
   </component>
-  <component name="RunManager" selected="Kotlin.JustinWrapperKt">
-    <configuration name="DebugDevKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="DebugDevKt" />
-      <module name="IdeaProjects.test_native_build.main" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+  <component name="RunManager" selected="Kotlin.DriverKt">
+    <configuration name="test_native_build [jar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="jar" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
     </configuration>
     <configuration name="DriverKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="DriverKt" />
-      <module name="IdeaProjects.test_native_build.main" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="FunctionInterpretationsKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="FunctionInterpretationsKt" />
       <module name="IdeaProjects.test_native_build.main" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -279,26 +231,24 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Gradle.test_native_build [jar]" />
       <item itemvalue="Kotlin.JustinWrapperKt" />
-      <item itemvalue="Kotlin.DebugDevKt" />
       <item itemvalue="Kotlin.DriverKt" />
-      <item itemvalue="Kotlin.FunctionInterpretationsKt" />
       <item itemvalue="Kotlin.MainKt" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.test_native_build [jar]" />
         <item itemvalue="Kotlin.JustinWrapperKt" />
         <item itemvalue="Kotlin.DriverKt" />
-        <item itemvalue="Kotlin.FunctionInterpretationsKt" />
         <item itemvalue="Kotlin.MainKt" />
-        <item itemvalue="Kotlin.DebugDevKt" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-cffe25b9f5b3-intellij.indexing.shared.core-IU-253.28294.334" />
+        <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.138" />
       </set>
     </attachedChunks>
   </component>
@@ -310,14 +260,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1703818996888</updated>
-    </task>
-    <task id="LOCAL-00074" summary="fix: charsequence, constant and a coerce thing">
-      <option name="closed" value="true" />
-      <created>1712628615548</created>
-      <option name="number" value="00074" />
-      <option name="presentableId" value="LOCAL-00074" />
-      <option name="project" value="LOCAL" />
-      <updated>1712628615548</updated>
     </task>
     <task id="LOCAL-00075" summary="fix: yet another fix for the &quot;java.reflect.Type&quot; and &quot;java.lang.Class&quot; mutual coerce problem">
       <option name="closed" value="true" />
@@ -703,12 +645,33 @@
       <option name="project" value="LOCAL" />
       <updated>1734401877012</updated>
     </task>
-    <option name="localTasksCounter" value="123" />
+    <task id="LOCAL-00123" summary="merging justin-str">
+      <option name="closed" value="true" />
+      <created>1765613896889</created>
+      <option name="number" value="00123" />
+      <option name="presentableId" value="LOCAL-00123" />
+      <option name="project" value="LOCAL" />
+      <updated>1765613896890</updated>
+    </task>
+    <option name="localTasksCounter" value="124" />
     <servers />
   </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="39addf66-eb3b-4f3a-acdd-b278596e16f6" value="TOOL_WINDOW" />
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
+        <entry key="39addf66-eb3b-4f3a-acdd-b278596e16f6">
+          <value>
+            <State />
+          </value>
+        </entry>
         <entry key="MAIN">
           <value>
             <State>
@@ -730,7 +693,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix: multiple decl of &quot;*!class&quot; class objects" />
     <MESSAGE value="add: object wrapper of primitive types like java.lang.Integer" />
     <MESSAGE value="fix: null cast should work now as global null constant" />
     <MESSAGE value="add: function signatures from java.lang.Integer, java.lang.BufferReader" />
@@ -755,7 +717,8 @@
     <MESSAGE value="path limit, remove deviants" />
     <MESSAGE value="fix: uncatched exception check and various refactors and fixes" />
     <MESSAGE value="various updates, mainly adapt to the paper release." />
-    <option name="LAST_COMMIT_MESSAGE" value="various updates, mainly adapt to the paper release." />
+    <MESSAGE value="merging justin-str" />
+    <option name="LAST_COMMIT_MESSAGE" value="merging justin-str" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -763,18 +726,18 @@
         <line-breakpoint type="kotlin-line">
           <condition expression="pathsOfFunc.key.contains(&quot;runLauncher&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/Main.kt</url>
-          <line>19</line>
+          <line>22</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint type="kotlin-line">
           <condition expression="b.method.name.toString().contains(&quot;getBreakI&quot;) &amp;&amp; b.method.declaringClass.name.contains(&quot;Composite&quot;)" language="kotlin" mode="CODE_FRAGMENT" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/Main.kt</url>
-          <line>78</line>
+          <line>81</line>
           <option name="timeStamp" value="24" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
-          <line>277</line>
+          <line>288</line>
           <properties>
             <option name="lambda-ordinal" value="-1" />
           </properties>
@@ -783,13 +746,13 @@
         <line-breakpoint enabled="true" type="kotlin-line">
           <condition expression="valueToBeCoerced.type.toString().contains(&quot;SootClassMemberSignature&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
-          <line>111</line>
+          <line>113</line>
           <option name="timeStamp" value="42" />
         </line-breakpoint>
         <line-breakpoint type="kotlin-line">
           <condition expression="typeToCoerce.toString().contains(&quot;ConfigurationError&quot;) || valueToBeCoerced.type.toString().contains(&quot;Enum&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
-          <line>116</line>
+          <line>118</line>
           <option name="timeStamp" value="48" />
         </line-breakpoint>
         <line-breakpoint type="kotlin-line">
@@ -801,13 +764,13 @@
         <line-breakpoint enabled="true" type="kotlin-line">
           <condition expression="value.toString().contains(&quot;E&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
-          <line>330</line>
+          <line>344</line>
           <option name="timeStamp" value="93" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <condition expression="value.toString().contains(&quot;neg \$d4&quot;)" language="kotlin" />
           <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
-          <line>349</line>
+          <line>363</line>
           <option name="timeStamp" value="95" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
@@ -833,31 +796,26 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/DisplayUtils.kt</url>
-          <line>480</line>
+          <line>494</line>
           <option name="timeStamp" value="122" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/JustinWrapper.kt</url>
-          <line>50</line>
-          <option name="timeStamp" value="130" />
+          <url>file://$PROJECT_DIR$/src/main/java/extension/FastTraceLocalDefs.kt</url>
+          <line>11</line>
+          <option name="timeStamp" value="176" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/JustinWrapper.kt</url>
-          <line>43</line>
-          <option name="timeStamp" value="131" />
+          <line>275</line>
+          <option name="timeStamp" value="203" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/JustinWrapper.kt</url>
-          <line>167</line>
-          <option name="timeStamp" value="132" />
+          <url>file://$PROJECT_DIR$/src/main/kotlin/Main.kt</url>
+          <line>196</line>
+          <option name="timeStamp" value="204" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/cn/ios/casegen/generator/GenerationFactory.java</url>
-          <line>104</line>
-          <option name="timeStamp" value="133" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/test/PathMethodWrapper.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/extension/PathMethodWrapper.java</url>
           <line>103</line>
           <option name="timeStamp" value="139" />
         </line-breakpoint>
@@ -892,21 +850,20 @@
           <option name="timeStamp" value="146" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/test/PathMethodWrapper.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/extension/PathMethodWrapper.java</url>
           <line>95</line>
           <option name="timeStamp" value="150" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/test/PathMethodWrapper.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/extension/PathMethodWrapper.java</url>
           <line>92</line>
           <option name="timeStamp" value="152" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
-    <watches-manager>
-      <configuration name="GradleRunConfiguration">
-        <watch expression="(unitChain as SPatchingChain).size" language="kotlin" custom="import soot.shimple.internal.SPatchingChain" />
-      </configuration>
-    </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

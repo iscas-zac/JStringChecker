@@ -13,20 +13,20 @@ import com.google.common.collect.Maps.newHashMap
 import soot.Body
 import soot.Local
 import soot.Scene.v
-import soot.jimple.BinopExpr
-import soot.jimple.Constant
-import soot.jimple.IfStmt
-import soot.jimple.ReturnStmt
+import soot.SootMethod
+import soot.jimple.*
+import soot.toolkits.graph.Block
+import soot.toolkits.graph.BriefBlockGraph
 import soot.toolkits.graph.BriefUnitGraph
-import soot.toolkits.graph.UnitGraph
-import test.EnhancedCFGPathExtractor
-import test.PathMethodWrapper.wrapPathAsNewMethod
+import java.io.File
 import java.io.File.separator
-import java.io.IOException
 import java.nio.file.Files.createDirectories
-import java.nio.file.Files.write
 import java.nio.file.Paths.get
 import java.nio.file.StandardOpenOption
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.io.path.writeText
 
 class UselessTag(val i: Int) : soot.tagkit.Tag {
     override fun getName(): String {
@@ -38,36 +38,68 @@ class UselessTag(val i: Int) : soot.tagkit.Tag {
     }
 }
 
-class SimpleUnitGraph(body: Body, units: List<soot.Unit>) : UnitGraph(body) {
-    init {
-        unitChain.removeAll(unitChain)
-        units[0].defBoxes
-        val us = units.mapIndexed { index, unit ->
-            val u = unit.clone() as soot.Unit
-            u.addTag(UselessTag(index))
-
-            u
-        }
-        unitChain.addAll(us)
-        if (heads != null) {
-            heads.removeAll(heads)
-            if (units.isNotEmpty()) {
-                heads.add(units.first())
-            }
-        }
-        if (tails != null) {
-            tails.removeAll(tails)
-            if (units.isNotEmpty()) {
-                tails.add(units.last())
-            }
-        }
-
-    }
-}
-
 fun main() {
-    init("C:\\Users\\yyzha\\Desktop\\jars\\byproduct\\dataset_rev\\awesome\\fastcsv\\fastcsv-3.4.0.jar",
-        "C:\\Users\\yyzha\\Desktop\\path\\JustinStr-New\\out\\results\\awesome\\fastcsv")
+    val baseInput = "C:\\Users\\yyzha\\Desktop\\jars\\byproduct\\dataset_rev"
+    val baseOutput = "D:\\learning\\JustinStr-New\\out\\results"
+
+    var flag = false
+    File(baseInput).walk().maxDepth(3).filter {
+        it.isFile && it.extension.equals("jar", ignoreCase = true)
+    }.forEach { jarFile ->
+        // 获取相对路径（如 "awesome\fastcsv"）
+        val relativePath = jarFile.parentFile.relativeTo(File(baseInput)).path
+        if (relativePath.contains("httpclient")) { flag = true }
+        if (flag) {
+            runCatching {
+                // 假设要覆写的文件名为 "marker.txt"，位于输出目录下
+                File("$baseOutput\\$relativePath\\justinStr-result\\extension", "paths.txt").delete()
+                File("$baseOutput\\$relativePath", "smt").deleteRecursively()
+            }
+            println(relativePath)
+            val stringStat = ConcurrentHashMap<SootMethod, Int>()
+            val meths = mutableListOf<SootMethod>()
+            val strictProcess = { funcName: String, body: Body, index: Int, slicer: Slicer ->
+                val dir = File(
+                    "$baseOutput\\$relativePath\\smt",
+                    "method-" + funcName.replace("<", "\$lt;").replace(">", "\$gt;")
+                )
+                createDirectories(dir.parentFile.toPath())
+                if (slicer.getApiTypes().values.sum() > 0 && dir.isDirectory() || dir.mkdir()) {
+                    slicer.setMethodBody(body)
+                    val (normal, _) = compatibleSmtlibTransformer(slicer)
+                    val additional = "\n;seq ${slicer.getApisInvokeOrder().joinToString(";\t")}\n;cnt {${
+                        slicer.getApiTypes().map { (k, v) -> "\"$k\": $v" }.joinToString(",")
+                    }}\n;stmts ${slicer.stmts.joinToString(";\t")}\n;block_num ${slicer.programPath.size}"
+                    File(dir, "$index.smt2").writeText(normal + additional)
+                }
+
+                // delete empty folders
+                if (dir.listFiles()?.isEmpty() == true) dir.delete()
+
+                // string api usage statistics for each method
+                if (body.method !in meths && dir.exists()) {
+                    File(dir, "flags.txt").writeText("is public: ${body.method.isPublic}")
+
+                    meths.add(body.method)
+                    body.units.mapNotNull { unit ->
+                        if ((unit as Stmt).containsInvokeExpr())
+                            unit.invokeExpr.method
+                        else null
+                    }.filter {
+                        it.declaringClass.name.contains("java.lang.String") ||
+                                it.declaringClass.name.contains("java.lang.CharSequence") ||
+                                it.declaringClass.name.contains("StringUtils")
+                    }.groupBy { it }
+                        .mapValues { it.value.count() }
+                        .forEach { (meth, cnt) -> stringStat.merge(meth, cnt) { acc, n -> acc + n } }
+                }
+            }
+            init(jarFile.absolutePath, "$baseOutput\\$relativePath", strictProcess)
+            return
+        }
+    }
+//    init("C:\\Users\\yyzha\\Desktop\\jars\\byproduct\\dataset_rev\\awesome\\fastcsv\\fastcsv-3.4.0.jar",
+//        "C:\\Users\\yyzha\\Desktop\\path\\JustinStr-New\\out\\results\\awesome\\fastcsv")
 }
 
 fun extractSootMethodPaths(
@@ -120,12 +152,94 @@ fun extractSootMethodPaths(
     return paths.toList()
 }
 
-fun init(inputPath: String, outputPath: String) {
+fun extractSootBlockPaths(
+    body: Body,
+    maxBlockVisits: Int = 2,
+    maxPathLength: Int = 1000,
+    timeoutMs: Long = 30000
+): Sequence<List<Block>> = sequence {
+    val cfg = BriefBlockGraph(body)
+    val startTime = System.currentTimeMillis()
+
+    // 栈帧存储遍历状态
+    data class Frame(
+        val block: Block,
+        val path: List<Block>,
+        val visitCounts: Map<Block, Int>,
+        val iterator: Iterator<Block>? = null
+    )
+
+    // 初始化栈，从所有入口基本块开始
+    val stack = ArrayDeque<Frame>().apply {
+        cfg.heads.forEach { head ->
+            add(Frame(head, emptyList(), emptyMap()))
+        }
+    }
+
+    while (stack.isNotEmpty()) {
+        if (System.currentTimeMillis() - startTime > timeoutMs) break
+
+        val top = stack.last()
+        val (block, path, visitCounts, iterator) = top
+
+        // 如果是新节点（iterator为null），处理节点逻辑
+        if (iterator == null) {
+            // 检查约束条件
+            if (path.size >= maxPathLength) {
+                stack.removeLast()
+                continue
+            }
+
+            val currentCount = visitCounts.getOrDefault(block, 0)
+            if (currentCount >= maxBlockVisits) {
+                stack.removeLast()
+                continue
+            }
+
+            // 构建新路径和访问计数
+            val newPath = path.plusElement(block)
+            val newVisitCounts = visitCounts + (block to currentCount + 1)
+
+            // 如果是出口块，产出路径
+            if (cfg.tails.contains(block)) {
+                yield(newPath)
+                stack.removeLast()
+                continue
+            }
+
+            // 获取后继块迭代器
+            val succIter = block.succs.iterator()
+            stack[stack.lastIndex] = top.copy(iterator = succIter)
+
+            // 将第一个后继压栈
+            if (succIter.hasNext()) {
+                stack.add(Frame(succIter.next(), newPath, newVisitCounts))
+            }
+        } else {
+            // 继续遍历当前块的后继
+            if (iterator.hasNext()) {
+                // 将下一个后继压栈
+                val newPath = path.plusElement(block)
+                val currentCount = visitCounts.getOrDefault(block, 0)
+                val newVisitCounts = visitCounts + (block to currentCount + 1)
+                stack.add(Frame(iterator.next(), newPath, newVisitCounts))
+            } else {
+                // 所有后继遍历完成，回溯
+                stack.removeLast()
+            }
+        }
+    }
+}
+
+fun init(inputPath: String, outputPath: String, strictPlugin: (String, Body, Int, Slicer) -> Unit) {
+    connection = null
+    sootConfig = false
     Config.onceConfig("C:\\Program Files\\Eclipse Adoptium\\jdk-8.0.345.1-hotspot\\jre", outputPath, inputPath, -1, -1, -1, -1, -1)
+    var index = 0
     val constraintsForAllClasses: MutableMap<String?, MutableMap<String, MutableMap<Int, ParamConstraintVO>>> =
             newHashMap()
 
-    val f = {
+
         val applicationClasses = HashSet(v().getApplicationClasses())
         for (sootClass in applicationClasses) {
             if (isIgnoredClass(sootClass) ||
@@ -135,39 +249,40 @@ fun init(inputPath: String, outputPath: String) {
             } else {
                 TEST_CLASS_NUM++
             }
-            var res = ""
 
-            val thread = Thread {
+            val justinIntegratedWithStrictPlugin = { ->
                 val constraintsForEachClass: MutableMap<String, MutableMap<Int, ParamConstraintVO>> =
                     newHashMap()
                 val sootMethods = HashSet(sootClass.methods)
-                for (sootMethod in sootMethods) {
-                    if (isIgnoredMethod(sootMethod) || !sootMethod.hasActiveBody()) {
-                        continue
-                    }
-
-                    val body = sootMethod.getActiveBody()
-
-                    val savedResult: MutableMap<Int, ParamConstraintVO> = newHashMap()
-                    val filteredPaths = EnhancedCFGPathExtractor.extractPathsWithFilter(sootMethod, 2)
-                    if (filteredPaths.isEmpty()) continue
-                    val pathInfo = filteredPaths[0]
-                    if (pathInfo.hasStringAPI && pathInfo.usesStringParams) {
-                        val newMethod = wrapPathAsNewMethod(pathInfo, sootMethod, 0);
-                        if (newMethod.getActiveBody() != null) {
-                            newMethod.getActiveBody().validate();
-                            println("Successfully created method: " + newMethod.getSignature());
-
-                            // 打印新方法体
-                            println("Method body:");
-                            newMethod.activeBody.units.forEach {
-                                println("  $it")
-                            }
+                val filePath = get(TEST_OUTPUT_FOLDER + separator + "paths.txt")
+                createDirectories(filePath.parent)
+                java.nio.file.Files.newBufferedWriter(
+                    filePath,
+                    java.nio.charset.StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND
+                ).use { writer ->
+                    for (sootMethod in sootMethods) {
+                        if (isIgnoredMethod(sootMethod) || !sootMethod.hasActiveBody()) {
+                            continue
                         }
-                    }
-                    for (p in extractSootMethodPaths(body)) {
-                            val unitGraph = SimpleUnitGraph(body, p)
-                            for (unit in body.units) {
+
+                        val body = sootMethod.getActiveBody()
+
+                        val savedResult: MutableMap<Int, ParamConstraintVO> = newHashMap()
+    
+                        for (blocks in extractSootBlockPaths(body)) {
+                            if (sootMethod.name.contains("getIntProperty")) {
+                                println(blocks.joinToString("\n"))
+                            }
+                            val start = System.nanoTime()
+                            strictPlugin(
+                                "${body.method.declaringClass.name}__${body.method.name}__${body.method?.signature.hashCode()}",
+                                body, index, Slicer(blocks.reversed())
+                            )
+                            val strictTime = System.nanoTime()
+                            val p = blocks.flatten()
+                            for (unit in p) {
                                 val paramConstraintInfo = ParamConstraintDTO()
                                 if (unit is IfStmt) {
                                     val conditionExpr = unit.condition
@@ -181,7 +296,7 @@ fun init(inputPath: String, outputPath: String) {
                                             paramConstraintInfo.compareValue = rightValue.toString()
                                             if (leftValue is Local) {
                                                 traceLocal(
-                                                    unitGraph,
+                                                    p,
                                                     unit,
                                                     leftValue,
                                                     paramConstraintInfo,
@@ -194,7 +309,7 @@ fun init(inputPath: String, outputPath: String) {
                                             paramConstraintInfo.compareValue = leftValue.toString()
                                             if (rightValue is Local) {
                                                 traceLocal(
-                                                    unitGraph,
+                                                    p,
                                                     unit,
                                                     rightValue,
                                                     paramConstraintInfo,
@@ -210,7 +325,7 @@ fun init(inputPath: String, outputPath: String) {
                                     val returnValue = unit.op
                                     if (returnValue is Local) {
                                         traceLocal(
-                                            unitGraph,
+                                            p,
                                             unit,
                                             returnValue,
                                             paramConstraintInfo,
@@ -225,62 +340,44 @@ fun init(inputPath: String, outputPath: String) {
                                     GenConstraints.dealMethodCallList(paramConstraintInfo)
                                     // the methodCallList has already reversed
                                     GenConstraints.addToParamConstraintVO(savedResult, paramConstraintInfo)
-                                    res += ("invoked name:" +
-                                            paramConstraintInfo.methodCallList.toList()
-                                                .joinToString { obj: MethodCallDTO? -> obj?.methodName.toString() } +
-                                            "\ncomparison:" +
-                                            paramConstraintInfo.compareValue +
+                                    writer.write(
                                             "\ncaller name:" +
                                             body.getMethod().getName() +
                                             "\ncaller class:" +
                                             body.getMethod().getDeclaringClass() +
                                             "\nunit:" +
                                             unit +
-                                            "\nparams:" +
-                                            paramConstraintInfo.paramType + " " + paramConstraintInfo.paramIndex +
-                                            "\nhash:" +
-                                            p.hashCode() +
+                                            "\nindex:" +
+                                            index +
+                                            "\nstrict time:" +
+                                            strictTime.minus(start) +
+                                            "\njustin time:" +
+                                            System.nanoTime().minus(strictTime) +
                                             "\nresult:" +
-                                            savedResult.mapValues { it.value.possibleValuesForObject } +
+                                            savedResult.mapValues { it.value.possibleValuesForSimpleType } +
                                             "\n\n"
-                                            )
+                                    )
                                 }
+                            }
+                            index++
                         }
-                    }
-                    if (!savedResult.isEmpty()) {
-                        constraintsForEachClass[sootMethod.signature] = savedResult
+                        if (!savedResult.isEmpty()) {
+                            constraintsForEachClass[sootMethod.signature] = savedResult
+                        }
                     }
                 }
                 if (!constraintsForEachClass.isEmpty()) {
                     constraintsForAllClasses[sootClass.getName()] = constraintsForEachClass
                 }
-                try {
-                    val path = get(TEST_OUTPUT_FOLDER + separator + "paths.txt")
-                    createDirectories(path.parent)
-
-                    write(
-                        path, res.toByteArray(),
-                        StandardOpenOption.CREATE,
-                        StandardOpenOption.APPEND)
-                } catch (e: IOException) {
-                    println("not written $e")
-                }
             }
 
-            thread.start()
-            try {
-                val threadTime = 60L * 1000
-                thread.join(threadTime)
-            } catch (_: InterruptedException) {
-                // ...
-            }
-            // 如果线程仍在执行，就中断它
-            if (thread.isAlive) {
-                thread.interrupt()
-            }
+            justinIntegratedWithStrictPlugin()
         }
         PARAM_CONSTRAINTS_VOS = constraintsForAllClasses
-    }
-    f()
+
+    val start = System.nanoTime()
     GenerationFactory.generateClasses()
+    val filePath = get(outputPath, "justinStr-result", "test_time.txt")
+    createDirectories(filePath.parent)
+    filePath.writeText((System.nanoTime() - start).toString())
 }

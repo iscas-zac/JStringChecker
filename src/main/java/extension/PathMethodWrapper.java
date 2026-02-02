@@ -1,11 +1,8 @@
-package test;
+package extension;
 
 import soot.*;
 import soot.options.Options;
-import soot.toolkits.graph.*;
 import soot.jimple.*;
-import soot.jimple.toolkits.annotation.logic.Loop;
-import soot.jimple.toolkits.annotation.logic.LoopFinder;
 import soot.util.*;
 import java.util.*;
 

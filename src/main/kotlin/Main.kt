@@ -1,10 +1,13 @@
 import soot.*
+import soot.jimple.LookupSwitchStmt
 import soot.jimple.Stmt
+import soot.jimple.TableSwitchStmt
 import soot.options.Options
 import soot.toolkits.graph.ExceptionalBlockGraph
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+
 
 const val path_limit = 10
 
@@ -106,7 +109,7 @@ fun interpret(path: String) {
             val (normal, deviants) = compatibleSmtlibTransformer(slicer)
             val additional = "\n;seq ${slicer.getApisInvokeOrder().joinToString(";\t")}\n;cnt {${
                 slicer.getApiTypes().map { (k, v) -> "\"$k\": $v" }.joinToString(",")
-            }}\n;stmts ${slicer.stmts.joinToString(";\t")}\n;block_num ${slicer.programPath.size}"
+            }}\n;stmts ${summarizePath(slicer.stmts)}\n;block_num ${slicer.programPath.size}"
             File(dir, "$index.smt2").writeText(normal + additional)
             if (body.method.exceptions.isEmpty()) // for now only include deviants with un-catchable exceptions
                 deviants.forEachIndexed { num, text ->
@@ -135,8 +138,8 @@ fun interpret(path: String) {
                 .forEach { (meth, cnt) -> stringStat.merge(meth, cnt) { acc, n -> acc + n } }
         }
     }
-    val signatureTableForDefinition = model_list.filter { it.isFullyModeled }.associate { it.signature to it }
-    val signatureTableForAll = model_list.associate { it.signature to it }
+    val signatureTableForDefinition = model_list.filter { it.isFullyModeled }.associateBy { it.signature }
+    val signatureTableForAll = model_list.associateBy { it.signature }
 //    println(stringStat.toList().sortedBy { it.second }
 //        .joinToString("\n") { "$it ${it.first.toString() in signatureTableForAll}" })
     println("${stringStat.count { (meth, _) -> meth.toString() in signatureTableForDefinition }} / ${stringStat.count { (meth, _) -> meth.toString() in signatureTableForAll }} / ${stringStat.count()}")
@@ -153,15 +156,46 @@ fun sliceAndOutput(classPath: String, output: (String, Body, Int, Slicer) -> Uni
     Options.v().set_src_prec(Options.src_prec_class)
     Options.v().set_process_dir(Collections.singletonList(classPath))
     Options.v().set_allow_phantom_refs(true)
+    Options.v().set_output_format(Options.output_format_jimple)
+    Options.v().set_whole_program(true)
     Scene.v().loadNecessaryClasses()
+    Main.v().autoSetOptions()
     var ind = 0
 
-    PackManager.v().getPack("jtp").add(Transform("jtp.mySlicer", object : BodyTransformer() {
-        override fun internalTransform(b: Body, phaseName: String?, options: MutableMap<String, String>?) {
-//            if (!b.method.declaringClass.name.contains("MySQLAccess") || !b.method.name.contains("clinit"))
-//                return
+//    PackManager.v().getPack("jtp").add(Transform("jtp.mySlicer", object : BodyTransformer() {
+//        override fun internalTransform(b: Body, phaseName: String?, options: MutableMap<String, String>?) {
+////            if (!b.method.declaringClass.name.contains("MySQLAccess") || !b.method.name.contains("clinit"))
+////                return
+//            val start = ind
+//            // unroll the list operation to sequence
+//            for (paths in pathYielder(ExceptionalBlockGraph(b))) {
+//                if (ind > start + path_limit) break
+//                for (path in paths) {
+//                    if (b.method?.signature != null)
+//                        output(
+//                            "${b.method.declaringClass.name}__${b.method.name}__${b.method?.signature.hashCode()}",
+//                            b,
+//                            ind,
+//                            Slicer(path)
+//                        )
+//                    ind++
+//                }
+//            }
+//        }
+//    }))
+    PackManager.v().runPacks()
+
+    for (cls in Scene.v().classes.toList()) {
+        if (cls.name.let { it.startsWith("java.") || it.startsWith("com.sun") ||
+                    it.startsWith("sun.") || it.startsWith("javax.") ||
+                    it.startsWith("com.oracle") || it.startsWith("jdk.") }) {
+            continue
+        }
+        for (method in cls.methods.toList()) {
+            if (!method.hasActiveBody()) continue
+//            if (!method.name.contains("findHeaderIndex")) continue
+            val b = method.activeBody
             val start = ind
-            // unroll the list operation to sequence
             for (paths in pathYielder(ExceptionalBlockGraph(b))) {
                 if (ind > start + path_limit) break
                 for (path in paths) {
@@ -176,6 +210,5 @@ fun sliceAndOutput(classPath: String, output: (String, Body, Int, Slicer) -> Uni
                 }
             }
         }
-    }))
-    PackManager.v().runPacks()
+    }
 }

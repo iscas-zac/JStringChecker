@@ -1,5 +1,6 @@
 import soot.*
 import soot.jimple.*
+import soot.shimple.PhiExpr
 import soot.util.Numberable
 import kotlin.math.floor
 
@@ -16,6 +17,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
     val functions = mutableMapOf<String, Pair<List<Any>, Any>>()
     // placeholder codes like null definition and class object
     val placeholderDeclarations = mutableMapOf<String, Any>()
+    val initializedLocals = mutableListOf<Local>()
     fun grabRandomName(): String {
         var name: String
         do {
@@ -134,6 +136,11 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 // else go to below
             }
             if (valueToBeCoerced.type is NullType) { // default to cast the null's
+                if (typeClasses.all { it is NullType }) {
+                    val nullName = "null-${inlineArrayName(NullType.v())}"
+                    placeholderDeclarations[nullName] = NullType.v()
+                    return nullName
+                }
                 val ty = typeClasses.first { it !is NullType }
                 val nullName = "null-${inlineArrayName(ty as Type)}"
                 // TODO: make sure null not equal to any concrete instance
@@ -171,6 +178,10 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             }
 
             return when (value) {
+                is PhiExpr -> { // prepare for shimple
+                    val v = value.values.associateBy { initializedLocals.indexOf(it) }.maxBy { it.key }.value
+                    transformName(v)
+                }
                 is NewExpr -> { // TODO: convey the pointer nature by alias analysis
                     val funcName = "${transformName(value.baseType)}-init" // placeholder value
                     functions.putIfAbsent(funcName, listOf<Any>() to value.baseType)
@@ -325,6 +336,9 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                     placeholderDeclarations["null-NullType"] =
                         NullType.v()
                     "null-NullType"
+                }
+                is BooleanConstant -> {
+                    value.boolean.toString()
                 }
                 is IntConstant -> {
                     value.value.toString()
@@ -549,11 +563,13 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
             "__"
         )
 
+        fun isPhiUninitialized(rvalue: Value) =
+            (rvalue is PhiExpr && rvalue.values.all { v -> v !is Local || !initializedLocals.contains(v) })
         /**
          * declare a name (`lvalue`) or define a name (`lvalue`)  to be `rvalue`, given the type `ty` of `lvalue` as
          * it might already be a field of some object and carry a specific type.
          */
-        fun transformDefine(ty: Type, lvalue: Value, rvalue: Value? = null): String = if (rvalue == null) {
+        fun transformDefine(ty: Type, lvalue: Value, rvalue: Value? = null): String = if (rvalue == null || isPhiUninitialized(rvalue)) {
             // enforce the eval order to get rid of self-reference
             val literal1 = transformName(ty)
             "(declare-const ${transformDefinitionName(lvalue)} $literal1)"
@@ -578,7 +594,7 @@ fun Slicer.smtExpand(): Pair<String, List<String>> {
                 }
                 //is StaticFieldRef -> "" TODO: make it linked to a class object
                 else -> {
-                    assert(lvalue is Local)
+                    if (lvalue is Local) initializedLocals.add(lvalue)
                     "(define-const ${transformDefinitionName(lvalue)} $literal1 $initializer)"
                 }
             }
