@@ -1,6 +1,10 @@
 plugins {
-    kotlin("jvm") version "1.9.22"
+    kotlin("jvm") version "2.1.0"
     application
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 repositories {
@@ -8,12 +12,14 @@ repositories {
 }
 
 application {
-    mainClass.set("JustinWrapperKt")
+//    mainClass.set("JustinWrapperKt")
+    mainClass.set("cn.ios.vs.smt.solver.PathMethodWrapper")
 }
 
 tasks.jar.configure {
     manifest {
-        attributes(mapOf("Main-Class" to "DriverKt"))
+//        attributes(mapOf("Main-Class" to "DriverKt"))
+        attributes(mapOf("Main-Class" to "cn.ios.vs.smt.solver.PathMethodWrapper"))
     }
     configurations["compileClasspath"].forEach { file: File ->
         from(zipTree(file.absoluteFile))

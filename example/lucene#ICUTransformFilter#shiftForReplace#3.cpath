@@ -1,0 +1,27 @@
+struct org_apache_lucene_analysis_icu_ICUTransformFilter___ReplaceableTermAttribute {int length;
+char* buffer[10];};
+struct org_apache_lucene_analysis_tokenattributes_CharTermAttribute {};
+struct org_apache_lucene_analysis_icu_ICUTransformFilter___ReplaceableTermAttribute * r0;
+int i1;
+int i0;
+int i4;
+int i2 = i0 - i1; // i2 = i0 - i1
+int ___i3 = r0->length; // ___i3 = r0.<org.apache.lucene.analysis.icu.ICUTransformFilter___ReplaceableTermAttribute: int length>
+int ___i5 = ___i3 - i2; // ___i5 = ___i3 - i2
+int i6 = ___i5 + i4; // i6 = ___i5 + i4
+int ___i7 = r0->length; // ___i7 = r0.<org.apache.lucene.analysis.icu.ICUTransformFilter___ReplaceableTermAttribute: int length>
+
+@(i6 <= ___i7);
+
+@!((i2 == i4));
+int ___i8 = r0->length; // ___i8 = r0.<org.apache.lucene.analysis.icu.ICUTransformFilter___ReplaceableTermAttribute: int length>
+
+@!((i0 >= ___i8));
+char* ___r2[10] = r0->buffer; // ___r2 = r0.<org.apache.lucene.analysis.icu.ICUTransformFilter___ReplaceableTermAttribute: char[] buffer>
+char* ___r1[10] = r0->buffer; // ___r1 = r0.<org.apache.lucene.analysis.icu.ICUTransformFilter___ReplaceableTermAttribute: char[] buffer>
+int ___i11 = i1 + i4; // ___i11 = i1 + i4
+int ___i9 = r0->length; // ___i9 = r0.<org.apache.lucene.analysis.icu.ICUTransformFilter___ReplaceableTermAttribute: int length>
+int ___i10 = ___i9 - i0; // ___i10 = ___i9 - i0
+java_lang_System_arraycopy(___r2, i0, ___r1, ___i11, ___i10); // staticinvoke <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>(___r2, i0, ___r1, ___i11, ___i10)
+
+return i6;
