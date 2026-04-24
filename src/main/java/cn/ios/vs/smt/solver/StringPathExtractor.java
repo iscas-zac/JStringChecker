@@ -1,7 +1,9 @@
 package cn.ios.vs.smt.solver;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 import soot.Body;
 import soot.SootMethod;
@@ -12,10 +14,13 @@ import soot.jimple.Stmt;
 import soot.toolkits.graph.BriefUnitGraph;
 
 public class StringPathExtractor {
+
+	public boolean hasApiFlag = false;
 	
 	private SootMethod sootMethod;
 	
 	private List<List<Unit>> stringPaths = new ArrayList<>();
+	public List<Integer> unroll_cnt = new ArrayList<>();
 	
 	private int loopCount = 1;
 	
@@ -25,6 +30,7 @@ public class StringPathExtractor {
 	}
 	
 	public List<List<Unit>> allStringPaths(){
+//		System.out.println("stage: splitting paths");
 		List<List<Unit>> paths = new ArrayList<>();
 		if(!sootMethod.hasActiveBody()) {
 			System.out.println(sootMethod.getSignature()+" has no active body");
@@ -41,20 +47,33 @@ public class StringPathExtractor {
 			// System.out.println(sootMethod.getSignature()+" contains no String API Invocation");
 			return paths;
 		}
-		System.out.println(sootMethod.getSignature()+" contains a String API Invocation");
+//		System.out.println(sootMethod.getSignature()+" contains a String API Invocation");
 		PathExtractor extractor = new PathExtractor(new BriefUnitGraph(body));
 		paths = extractor.extractPaths();
 		if (paths.size() > 500) paths = paths.subList(0, 500);
+		PathUnroller.has_api_flag = false;
 //		System.out.println(sootMethod.getSignature()+" paths number = "+paths.size());
 		LoopAnalysis loopAnalysis = new LoopAnalysis(sootMethod);
+        loopAnalysis.generation(new HashSet<>(Collections.singletonList(sootMethod)));
+//		System.out.println("processing paths with size of " + paths.size());
 		for(List<Unit> path:paths) {
 			if(containsStringAPIInPath(path)) {
-				path = PathUnroller.unrollPath(path, loopAnalysis, loopCount);
-				if(!containsPath(stringPaths,path)) {
-					stringPaths.add(path);
+//				System.out.println("stage: looping on path " + path.hashCode());
+				var memo = PathUnroller.preprocessPath(path, loopAnalysis);
+				for (int loop_cnt = 1; loop_cnt <= 10; loop_cnt++) {
+//					System.out.println("loop count " + loop_cnt);
+					path = PathUnroller.unrollPathWithMetadata(memo, loop_cnt);
+					if (!containsPath(stringPaths, path)) {
+						List<Unit> tagged_path = new ArrayList<>(path);
+						tagged_path.set(0, (Unit) path.get(0).clone());
+						tagged_path.get(0).addTag(new LoopCountTag(loop_cnt));
+						stringPaths.add(tagged_path);
+					}
 				}
+//				System.out.println("finishing " + path.hashCode());
 			}
 		}
+		if (PathUnroller.has_api_flag) hasApiFlag = true;
 		return stringPaths;
 	}
 	
@@ -121,7 +140,7 @@ public class StringPathExtractor {
                 InvokeExpr invoke = stmt.getInvokeExpr();
                 SootMethod calledMethod = invoke.getMethod();
                 String className = calledMethod.getDeclaringClass().getName();
-                
+
                 if (!calledMethod.isStatic() && isStringClass(className)) {
                     return true;
                 }

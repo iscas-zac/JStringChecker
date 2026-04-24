@@ -2,11 +2,14 @@ package cn.ios.vs.smt.solver;
 
 import soot.*;
 import soot.jimple.*;
+import soot.jimple.parser.node.AFile;
 import soot.options.Options;
 import soot.util.*;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.io.*;
 
@@ -23,7 +26,9 @@ import java.util.Map.Entry;
 import static extension.PluginStrictKt.transformAndOutputAt;
 
 public class PathMethodWrapper {
-    
+    public static List<SootMethod> meths_with_api_in_loop = new ArrayList<>();
+    public static Map<SootMethod, Integer> loop_cnt = new HashMap<>();
+
     // 包装路径为新方法
     public static SootMethod wrapPathAsNewMethod(List<Unit> path, SootMethod originalMethod, int pathIndex) {
         // 创建新方法名
@@ -230,7 +235,6 @@ public class PathMethodWrapper {
     
     // 主方法：处理所有符合条件的路径
     public static Map<SootMethod, List<Unit>> processAndWrapPaths(SootMethod method, int n) {
-    	
     	Map<SootMethod, List<Unit>> methods = new HashMap<>();
     	StringPathExtractor extractor = new StringPathExtractor(method,n);
         // 提取路径
@@ -251,6 +255,12 @@ public class PathMethodWrapper {
 //                    newMethod.getActiveBody().validate();
 //                    System.out.println("Successfully created method: " + newMethod.getSignature());
                 	methods.put(newMethod, pathInfo);
+                    int cnt = -1;
+                    LoopCountTag tag = (LoopCountTag) pathInfo.get(0).getTag("LoopCountTag");
+                    if (tag != null) cnt = tag.getLoopCount();
+                    loop_cnt.put(newMethod, cnt);
+                    if (loop_cnt.size() > 10000) {
+                        break; }
                     // 打印新方法体
 //                    System.out.println("Method body:");
 //                    for (Unit unit : newMethod.getActiveBody().getUnits()) {
@@ -262,26 +272,35 @@ public class PathMethodWrapper {
                 e.printStackTrace();
             }
         }
+        if (extractor.hasApiFlag) meths_with_api_in_loop.add(method);
         return methods;
     }
     
     // 主函数示例
     public static void main(String[] args) {
-        double common_startup = 0;
-        double strict_time = 0;
-        double justin_time = 0;
-        long common_start = System.nanoTime();
-        // Soot 初始化
-        String classPath = "D:\\learning\\jars\\byproduct\\dataset_rev\\awesome\\fastcsv\\fastcsv-3.4.0.jar";
-        if (args.length == 1) {
-            classPath = args[0];
+        // 解析命令行参数
+        String classPath = "C:\\Users\\yyzha\\Desktop\\projects\\JStringChecker\\test\\fastcsv-3.4.0.jar";
+        int maxLoopCount = 10000;  // 默认值：最大循环次数
+
+        // 参数解析逻辑
+        if (args.length >= 1) {
+            classPath = args[0];  // 第一个参数：jar包路径
         }
+
+
+        double common_startup = 0;
+        double[] strict_time = {0, 0, 0, 0};
+        double[] justin_time = {0, 0, 0, 0};
+        long common_start = System.nanoTime();
+
+        // Soot 初始化
         List<String> list = new ArrayList<>();
         if (System.getProperty("os.name").toLowerCase().contains("win"))
-            list.add("C:\\Program Files\\Eclipse Adoptium\\jdk-8.0.345.1-hotspot\\jre");
+            list.add("C:\\Users\\yyzha\\.jdks\\temurin-1.8.0_442\\jre");
         else if (System.getProperty("os.name").toLowerCase().contains("linux"))
             list.add("/usr/lib/jvm/java-8-openjdk-amd64/jre");
         list.add(classPath);
+
         G.reset();
         Options.v().set_prepend_classpath(true);
         Options.v().set_whole_program(true);
@@ -315,7 +334,7 @@ public class PathMethodWrapper {
 		}
         
         // 写入文件：每个新方法的 regex 和 value
-        String[] frags = classPath.split(File.separator.replace("\\", "\\\\"));;
+        String[] frags = classPath.split(File.separator.replace("\\", "\\\\"));
         String name = frags[frags.length - 2];
         File base_dir = new File(classPath).getParentFile();
         File directory = new File(base_dir + "/smt");
@@ -347,46 +366,50 @@ public class PathMethodWrapper {
                 sc.setApplicationClass();
                 // 获取目标方法
                 for (SootMethod method : new ArrayList<>(sc.getMethods())) {
-                    int loopCount = 1;
-                    
-                    // 处理并包装路径
+
+                    // 处理并包装路径 - 使用命令行参数
                     try {
-                        Map<SootMethod, List<Unit>> methods = processAndWrapPaths(method, loopCount);
-
-                        // System.out.println("Paths in " + method.getSignature() + "  : # "+methods.size());
-
-
+                        // 调用修改后的processAndWrapPaths方法，传入maxLoopCount和maxPathsPerMethod
+                        Map<SootMethod, List<Unit>> methods = processAndWrapPaths(method, maxLoopCount);
                         common_startup += (double)(System.nanoTime() - common_start) / 1e9;
+
                         for(Entry<SootMethod, List<Unit>> p:methods.entrySet()) {
                             long start = System.nanoTime();
                             SootMethod m = p.getKey();
                             List<Unit> path = p.getValue();
-                            System.out.println(path);
+//                            System.out.println(path);
                             transformAndOutputAt(method.getName(), method.getSignature(), m, directory, cnt);
                             cnt++;
-                            strict_time += (double)(System.nanoTime() - start) / 1e9;
+                            int lcnt_grp = 0;
+                            int lcnt = loop_cnt.get(m);
+                            if (lcnt == 1) lcnt_grp = 0;
+                            else if (lcnt == 2) lcnt_grp = 1;
+                            else if (lcnt <= 5) lcnt_grp = 2;
+                            else if (lcnt <= 10) lcnt_grp = 3;
+                            strict_time[lcnt_grp] += (double)(System.nanoTime() - start) / 1e9;
+
                             start = System.nanoTime();
                             String regex = null;
                             try {
                                 JustinStrGenerator generator = new JustinStrGenerator();
                                 regex = generator.generate(new ArrayList<>(m.getActiveBody().getUnits()));
-
                             } catch (Exception e) {
                                 // 抽取的路径可能会有异常  暂时忽略
                                 e.printStackTrace();
                 //				 System.out.println(m.getActiveBody());
-                                continue;
                             }
 
-                            System.out.println("Regex: " + regex);
+//                            System.out.println("Regex: " + regex);
                             if(regex.equals(JustinStrGenerator.NO_STRING_CONSTRAINT)) {
                                 String line = method.getDeclaringClass().getName() + "::" + method.getName() + "\n" +
                                         (cnt - 1) + ".smt2" +
-                                    " \nNo-Regex: \nValue: " + "\n" + path.toString();
+                                        " \nNo-Regex: \nValue: " + "\n" + loop_cnt.get(m).toString();
                                 writer.write(line);
                                 writer.newLine();
+                                justin_time[lcnt_grp] += (double)(System.nanoTime() - start) / 1e9;
                                 continue;
                             }
+
                             String value = "";
                             // [^\Q#\E]{4}(?!^\Qclass\E$)[^\Q#\E]*
                 //        	regex = regex.replace("^", "");
@@ -411,15 +434,15 @@ public class PathMethodWrapper {
 
                             value = value.replace("\\", "\\\\");
                             value = value.replace("\"", "\\\"");
-                            System.out.println("String Value: " + value);
+//                            System.out.println("String Value: " + value);
 
                             String line = method.getDeclaringClass().getName() + "::" + method.getName() + "\n" +
                                     (cnt - 1) + ".smt2" +
-                                " \nRegex: " + regex + "\nValue: " + value + "\n" + path.toString();//value;
+                                " \nRegex: " + regex + "\nValue: " + value + "\n" + loop_cnt.get(m).toString();//value;
                             // if (method.getName().contains("findHeaderIndex")) line = line + method.getActiveBody().toString();
                             writer.write(line);
                             writer.newLine();
-                            justin_time += (double)(System.nanoTime() - start) / 1e9;
+                            justin_time[lcnt_grp] += (double)(System.nanoTime() - start) / 1e9;
                         }
                     } catch (Error e) {
                         err_list.add(method.toString() + ": " + e);
@@ -427,9 +450,22 @@ public class PathMethodWrapper {
                     common_start = System.nanoTime();
                 }
             }
+
+                if (!meths_with_api_in_loop.isEmpty()) {
+                    try {
+                        Files.writeString(Paths.get("/home/zhangchi/justin_strict_side_by_side/test_loop_existence/loops.txt"),
+                                frags[frags.length - 1] + " " + meths_with_api_in_loop.size(),
+                                StandardOpenOption.CREATE,
+                                StandardOpenOption.APPEND);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             Files.writeString(Paths.get(base_dir + "/statistics.json"), "{ \"justin\": " +
-                    justin_time + ",\n \"strict\": " +
-                    strict_time + ",\n \"common start\": " +
+                    Arrays.toString(justin_time) + ",\n \"strict\": " +
+                    Arrays.toString(strict_time) + ",\n \"common start\": " +
                     common_startup + ",\n \"error methods\": \"" +
                     err_list + " \"}");
 

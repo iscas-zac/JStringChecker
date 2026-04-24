@@ -4,7 +4,7 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(11)
 }
 
 repositories {
@@ -25,6 +25,10 @@ tasks.jar.configure {
         from(zipTree(file.absoluteFile))
     }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+base {
+    archivesName = "measure-loops"
 }
 
 dependencies {
